@@ -13,6 +13,7 @@ public class ErrorResponse {
     private HttpStatus statusCode;
     private int errorCode;
     private String message;
+    private String details;
 
 
 }

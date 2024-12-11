@@ -9,10 +9,12 @@ import org.springframework.http.HttpStatus;
 public class CustomException extends RuntimeException {
     private final int errorCode;
     private final HttpStatus statusCode;
+    private final String errorMessage;
 
-    public CustomException(String message, HttpStatus statusCode, int errorCode) {
+    public CustomException(String message, HttpStatus statusCode, int errorCode, String errorMessage) {
         super(message);
         this.statusCode = statusCode;
         this.errorCode = errorCode;
+        this.errorMessage = errorMessage;
     }
 }

@@ -15,7 +15,8 @@ public class GlobalExceptionHandler {
                 false,
                 ex.getStatusCode(),
                 ex.getErrorCode(),
-                ex.getMessage()
+                ex.getMessage(),
+                ex.getErrorMessage()
         );
         return new ResponseEntity<>(errorResponse, ex.getStatusCode());
     }
@@ -26,7 +27,8 @@ public class GlobalExceptionHandler {
                 false,
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 9999, // 커스텀 에러 코드 정의 (알 수 없는 에러)
-                "An unexpected error occurred."
+                "An unexpected error occurred.",
+                ex.getMessage()
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }

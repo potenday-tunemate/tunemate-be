@@ -3,6 +3,12 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.tunemate.be.domain.auth.domain.EmailAuthMapper">
+    <resultMap id="EmailAuthResultMap" type="com.tunemate.be.domain.auth.domain.EmailAuth">
+        <id property="id" column="id"/>
+        <result property="email" column="email"/>
+        <result property="token" column="token"/>
+        <result property="expiredAt" column="expired_at"/>
+    </resultMap>
     <select id="findByToken" resultType="com.tunemate.be.domain.auth.domain.EmailAuth">
         SELECT *
         FROM email_auth
@@ -11,6 +17,7 @@
 
     <insert id="create" parameterType="com.tunemate.be.domain.auth.domain.EmailAuth">
         INSERT INTO email_auth (email, token, expired_at)
-        VALUES (#{email}, #{token}, #{expired_at})
+        VALUES (#{email}, #{token}, #{expiredAt})
     </insert>
+
 </mapper>

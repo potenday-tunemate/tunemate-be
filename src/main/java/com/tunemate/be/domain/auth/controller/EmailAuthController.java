@@ -6,6 +6,8 @@ import com.tunemate.be.domain.auth.service.EmailAuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.concurrent.ExecutionException;
+
 @RestController
 @RequestMapping("/auth")
 public class EmailAuthController {
@@ -21,7 +23,7 @@ public class EmailAuthController {
     }
 
     @PostMapping("/email")
-    public ResponseEntity<Void> CreateEmailAuth(@RequestBody CreateEmailAuthDTO dto) {
+    public ResponseEntity<Void> CreateEmailAuth(@RequestBody CreateEmailAuthDTO dto) throws ExecutionException, InterruptedException {
         emailAuthService.createEmailAuth(dto);
         return ResponseEntity.ok().build();
     }
