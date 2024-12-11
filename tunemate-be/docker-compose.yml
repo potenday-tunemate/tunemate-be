@@ -1,0 +1,11 @@
+services:
+  db:
+    image: mariadb:10.7
+    container_name: db
+    environment:
+      MYSQL_ROOT_PASSWORD: 123
+      MYSQL_DATABASE: tunemate_db
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: 123
+    ports:
+      - 3306:3306
