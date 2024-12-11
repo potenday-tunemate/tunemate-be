@@ -1,4 +1,4 @@
-package com.tunemate.be.domain.health_check.presentation;
+package com.tunemate.be.domain.health_check.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
