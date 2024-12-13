@@ -65,16 +65,26 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: create env file
+      - name: Create env file
         run: |
-          echo "DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}" >> ./envfile
           echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> ./envfile
+          echo "DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}" >> ./envfile
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> ./envfile
           echo "DB_HOST=${{ secrets.DB_HOST }}" >> ./envfile
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> ./envfile
           echo "SMTP_USERNAME=${{ secrets.SMTP_USERNAME }}" >> ./envfile
           echo "SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}" >> ./envfile
           echo "GIT_COMMIT_HASH=${{ github.sha }}" >> ./envfile
+
+      - name: Display envfile contents
+        run: cat ./envfile
+
+      - name: Source Environment File
+        run: |
+          set -a
+          source ./envfile
+          set +a
+
       - name: Docker Stack Deploy
         uses: cssnr/stack-deploy-action@v1
         with:
