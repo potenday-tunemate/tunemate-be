@@ -1,5 +1,5 @@
 -- +goose Up
-CREATE TABLE "user" (
+CREATE TABLE user (
     id bigint PRIMARY KEY AUTO_INCREMENT,
     email varchar(255) NOT NULL UNIQUE,
     password varchar(255) NOT NULL,
@@ -9,4 +9,4 @@ CREATE TABLE "user" (
 );
 
 -- +goose Down
-DROP TABLE "user";
+DROP TABLE user;

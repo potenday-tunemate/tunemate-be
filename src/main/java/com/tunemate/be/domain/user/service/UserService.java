@@ -9,6 +9,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import lombok.Setter;
 import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,8 @@ import java.util.function.Supplier;
 @Setter
 public class UserService {
     private final UserMapper userMapper;
+
+    @Autowired
     private Validator validator;
 
     public UserService(UserMapper userMapper) {
