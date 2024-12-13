@@ -1,9 +1,9 @@
 package com.tunemate.be.domain.auth.service;
 
-import com.tunemate.be.domain.auth.domain.CreateEmailAuthDTO;
-import com.tunemate.be.domain.auth.domain.EmailAuth;
-import com.tunemate.be.domain.auth.domain.EmailAuthMapper;
-import com.tunemate.be.domain.auth.domain.UpdateEmailAuthDTO;
+import com.tunemate.be.domain.auth.domain.emailAuth.CreateEmailAuthDTO;
+import com.tunemate.be.domain.auth.domain.emailAuth.EmailAuth;
+import com.tunemate.be.domain.auth.domain.emailAuth.EmailAuthMapper;
+import com.tunemate.be.domain.auth.domain.emailAuth.UpdateEmailAuthDTO;
 import com.tunemate.be.domain.email.service.EmailService;
 import com.tunemate.be.global.exceptions.CustomException;
 import com.tunemate.be.global.utils.Utils;

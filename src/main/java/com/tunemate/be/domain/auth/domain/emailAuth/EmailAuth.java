@@ -1,4 +1,4 @@
-package com.tunemate.be.domain.auth.domain;
+package com.tunemate.be.domain.auth.domain.emailAuth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

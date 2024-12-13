@@ -1,7 +1,7 @@
 package com.tunemate.be.domain.auth.controller;
 
-import com.tunemate.be.domain.auth.domain.CreateEmailAuthDTO;
-import com.tunemate.be.domain.auth.domain.EmailAuth;
+import com.tunemate.be.domain.auth.domain.emailAuth.CreateEmailAuthDTO;
+import com.tunemate.be.domain.auth.domain.emailAuth.EmailAuth;
 import com.tunemate.be.domain.auth.service.EmailAuthService;
 import com.tunemate.be.global.responses.OkResponse;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.concurrent.ExecutionException;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/auth/email")
 public class EmailAuthController {
     private final EmailAuthService emailAuthService;
 
@@ -18,18 +18,18 @@ public class EmailAuthController {
         this.emailAuthService = emailAuthService;
     }
 
-    @GetMapping("/email")
+    @GetMapping("")
     public ResponseEntity<EmailAuth> FindEmailAuthByToken() {
         return ResponseEntity.ok(emailAuthService.getEmailAuthByToken("test"));
     }
 
-    @PostMapping("/email")
+    @PostMapping("")
     public ResponseEntity<OkResponse<Void>> CreateEmailAuth(@RequestBody CreateEmailAuthDTO dto) throws ExecutionException, InterruptedException {
         emailAuthService.createOrUpdateEmailAuth(dto);
         return ResponseEntity.ok(new OkResponse<>(true, null));
     }
 
-    @PostMapping("/email/verify")
+    @PostMapping("/verify")
     public ResponseEntity<OkResponse<EmailAuth>> VerifyEmailAuth(@RequestParam String token) {
         return ResponseEntity.ok(new OkResponse<>(true, emailAuthService.verifyEmailAuth(token)));
     }

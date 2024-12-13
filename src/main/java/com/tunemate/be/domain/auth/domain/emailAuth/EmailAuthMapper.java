@@ -1,4 +1,4 @@
-package com.tunemate.be.domain.auth.domain;
+package com.tunemate.be.domain.auth.domain.emailAuth;
 
 import org.apache.ibatis.annotations.Mapper;
 
