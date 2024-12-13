@@ -21,7 +21,7 @@ public class UserController {
         CreateUserDTO loginUser = userService.loginUserExist(userDto);
 
         if(loginUser == null) {
-            return "user/loginFail";
+            return "user/loginPage";
 
         }else {
         
