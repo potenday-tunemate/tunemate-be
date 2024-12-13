@@ -18,4 +18,11 @@
         INSERT INTO user (email, password, nickname)
         VALUES (#{email}, #{password}, #{nickname})
     </insert>
+
+    <select id="loginUserRight" resultType="com.tunemate.be.domain.user.domain.user.CreateUserDTO">
+        SELECT * FROM user
+        where 
+            email = #{email} 
+            and password = #{password}
+    </select>
 </mapper>

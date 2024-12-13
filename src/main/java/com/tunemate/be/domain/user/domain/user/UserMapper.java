@@ -9,4 +9,6 @@ public interface UserMapper {
     Optional<User> findByEmail(String email);
 
     void create(CreateUserDTO dto);
+
+    CreateUserDTO loginUserRight(CreateUserDTO userDto);
 }

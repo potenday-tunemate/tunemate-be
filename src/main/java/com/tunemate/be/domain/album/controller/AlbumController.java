@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tunemate.be.domain.album.domain.album.AlbumDto;
 import com.tunemate.be.domain.album.service.AlbumService;
+import com.tunemate.be.domain.user.domain.user.CreateUserDTO;
+
+import jakarta.servlet.http.HttpSession;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,8 +23,10 @@ public class AlbumController {
     private AlbumService albumService;
 
     @PostMapping("registAlbumInfo")
-    public ResponseEntity<Void> registAlbumInfo(@RequestBody AlbumDto dto) {
-        
+    public ResponseEntity<Void> registAlbumInfo(@RequestBody AlbumDto dto,HttpSession session) {
+        CreateUserDTO sessionUser = (CreateUserDTO)session.getAttribute("loginUser");
+        dto.setId(sessionUser.getId());
+
         albumService.registAlbumInfo(dto);
         return ResponseEntity.ok().build();
     }

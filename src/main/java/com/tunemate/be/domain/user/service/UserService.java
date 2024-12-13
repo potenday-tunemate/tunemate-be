@@ -60,4 +60,8 @@ public class UserService {
             throw new CustomException("유저를 생성 할 수 없습니다.", HttpStatus.INTERNAL_SERVER_ERROR, 3003, "");
         }
     }
+
+    public CreateUserDTO loginUserExist(CreateUserDTO userDto) {
+        return userMapper.loginUserRight(userDto);
+    }
 }
