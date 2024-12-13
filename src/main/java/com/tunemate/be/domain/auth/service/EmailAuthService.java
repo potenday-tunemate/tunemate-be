@@ -47,16 +47,17 @@ public class EmailAuthService {
 
     public void updateEmailAuth(UpdateEmailAuthDTO dto) {
         EmailAuth emailAuth = getEmailAuthById(dto.getId());
-
         emailAuthMapper.update(dto);
     }
 
     public void createOrUpdateEmailAuth(CreateEmailAuthDTO dto) {
-        String newToken = Utils.getToken().toString(); // Utils.getToken()이 String을 반환한다고 가정
+        String newToken = Utils.getToken().toString();
         Instant expiredAt = Instant.now().plusSeconds(3600);
 
+        EmailAuth emailAuth;
+
         try {
-            EmailAuth emailAuth = getEmailAuthByEmail(dto.getEmail());
+            emailAuth = getEmailAuthByEmail(dto.getEmail());
 
             UpdateEmailAuthDTO updateEmailAuthDTO = UpdateEmailAuthDTO.builder()
                     .id(emailAuth.getId())
@@ -64,22 +65,26 @@ public class EmailAuthService {
                     .expiredAt(expiredAt)
                     .build();
             emailAuthMapper.update(updateEmailAuthDTO);
+
         } catch (CustomException error) {
             if (error.getErrorCode() == 2002) {
-                dto.setToken(newToken);
-                dto.setExpiredAt(expiredAt);
+                emailAuth = EmailAuth.builder()
+                        .email(dto.getEmail())
+                        .token(newToken)
+                        .expired_at(Timestamp.from(expiredAt))
+                        .build();
+
                 try {
+                    emailAuthMapper.create(emailAuth);
+
                     Context context = new Context();
-                    context.setVariable("code", dto.getToken());
-                    emailAuthMapper.create(dto);
+                    context.setVariable("code", newToken);
                     emailService.sendEmail(
                             dto.getEmail(),
                             "[Tunemate] 이메일 인증번호입니다.",
                             "emailAuth",
                             context
                     );
-                } catch (CustomException e) {
-                    throw e;
                 } catch (Exception e) {
                     throw new CustomException("이메일 인증 생성이 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR, 2003, e.getMessage());
                 }

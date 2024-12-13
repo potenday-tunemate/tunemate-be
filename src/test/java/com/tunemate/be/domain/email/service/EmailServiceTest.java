@@ -1,74 +1,132 @@
 package com.tunemate.be.domain.email.service;
 
+
 import com.tunemate.be.global.exceptions.CustomException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.thymeleaf.context.Context;
-import org.thymeleaf.spring5.SpringTemplateEngine;
+import org.thymeleaf.spring6.SpringTemplateEngine;
 
-import java.io.IOException;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
+@ExtendWith(SpringExtension.class)
 public class EmailServiceTest {
 
-
-    @Autowired
     private EmailService emailService;
 
-    @MockitoBean
-    private JavaMailSender javaMailSender;
+    @Mock
+    private JavaMailSender emailSender;
 
-    @MockitoBean
+    @Mock
     private SpringTemplateEngine templateEngine;
 
-    @Test
-    void shouldSendEmailWithHtmlContent() throws MessagingException, IOException {
-        // Given
-        String to = "test@example.com";
-        String subject = "Test Subject";
-        String templateName = "email-template";
-        Context context = new Context();
-        context.setVariable("name", "홍길동");
-        context.setVariable("content", "이메일 내용");
+    @Mock
+    private MimeMessage mimeMessage;
 
-        String expectedHtmlContent = "<html><body><h1>안녕하세요, 홍길동님!</h1><p>이메일 내용</p></body></html>";
+    @BeforeEach
+    public void setUp() {
+        emailService = new EmailService(emailSender, templateEngine);
+    }
 
-        MimeMessage mimeMessage = mock(MimeMessage.class);
-        when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
-
-        when(templateEngine.process(templateName, context)).thenReturn(expectedHtmlContent);
-
-        emailService.sendEmail(to, subject, templateName, context);
-
-        ArgumentCaptor<MimeMessage> mimeMessageCaptor = ArgumentCaptor.forClass(MimeMessage.class);
-        verify(javaMailSender).send(mimeMessageCaptor.capture());
-
+    @DynamicPropertySource
+    static void registerProperties(DynamicPropertyRegistry registry) {
+        registry.add("jwt.secret", () -> "thisIsASecretKeyThatShouldBeAtLeast32BytesLongOkWhynotWork");
+        registry.add("jwt.access_token.time", () -> 24);
+        registry.add("jwt.refresh_token.time", () -> 48);
     }
 
     @Test
-    void shouldThrowCustomExceptionWhenEmailSendingFails() {
-        String to = "test@example.com";
+    public void testSendEmail_Success() throws MessagingException {
+        // Arrange
+        String to = "recipient@example.com";
         String subject = "Test Subject";
-        String templateName = "email-template";
+        String templateName = "test-template";
         Context context = new Context();
+        context.setVariable("name", "Test User");
 
-        when(javaMailSender.createMimeMessage()).thenThrow(new RuntimeException("Failed to create message"));
+        // Mock the behavior of dependencies
+        when(emailSender.createMimeMessage()).thenReturn(mimeMessage);
+        when(templateEngine.process(eq(templateName), any(Context.class)))
+                .thenReturn("<html>Test Email Content</html>");
 
-        CustomException exception = assertThrows(CustomException.class, () -> {
+        // Act & Assert
+        assertDoesNotThrow(() -> {
             emailService.sendEmail(to, subject, templateName, context);
         });
 
-        assertEquals("이메일 전송에 실패했습니다.", exception.getMessage());
-        assertEquals(2004, exception.getErrorCode());
+        // Verify interactions
+        verify(emailSender).createMimeMessage();
+        verify(templateEngine).process(eq(templateName), any(Context.class));
+        verify(emailSender).send(mimeMessage);
+    }
+
+    @Test
+    public void testSendEmail_MessagingException() {
+        // Arrange
+        String to = "recipient@example.com";
+        String subject = "Test Subject";
+        String templateName = "test-template";
+        Context context = new Context();
+
+        // Simulate exception when creating mime message
+        when(emailSender.createMimeMessage()).thenThrow(new RuntimeException("Email creation failed"));
+
+        // Act & Assert
+        CustomException thrown = assertThrows(CustomException.class, () -> {
+            emailService.sendEmail(to, subject, templateName, context);
+        });
+
+        // Verify the exception details
+        assertEquals("이메일 전송에 실패했습니다.", thrown.getMessage());
+        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, thrown.getStatusCode());
+        assertEquals(2004, thrown.getErrorCode());
+
+        // Verify interactions
+        verify(emailSender).createMimeMessage();
+    }
+
+    @Test
+    public void testSendEmail_TemplateProcessingFailure() throws MessagingException {
+        // Arrange
+        String to = "recipient@example.com";
+        String subject = "Test Subject";
+        String templateName = "test-template";
+        Context context = new Context();
+
+        // Mock mime message creation
+        when(emailSender.createMimeMessage()).thenReturn(mimeMessage);
+
+        // Simulate template processing failure
+        when(templateEngine.process(eq(templateName), any(Context.class)))
+                .thenThrow(new RuntimeException("Template processing failed"));
+
+        // Act & Assert
+        CustomException thrown = assertThrows(CustomException.class, () -> {
+            emailService.sendEmail(to, subject, templateName, context);
+        });
+
+        // Verify the exception details
+        assertEquals("이메일 전송에 실패했습니다.", thrown.getMessage());
+        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, thrown.getStatusCode());
+        assertEquals(2004, thrown.getErrorCode());
+
+        // Verify interactions
+        verify(emailSender).createMimeMessage();
+        verify(templateEngine).process(eq(templateName), any(Context.class));
     }
 }

@@ -32,10 +32,10 @@ public class EmailService {
             helper.setSubject(subject);
 
             String htmlContent = templateEngine.process(templateName, context);
-            System.out.println(htmlContent);
             helper.setText(htmlContent, true);
             emailSender.send(message);
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             throw new CustomException("이메일 전송에 실패했습니다.", HttpStatus.UNPROCESSABLE_ENTITY, 2004, e.getMessage());
         }
 

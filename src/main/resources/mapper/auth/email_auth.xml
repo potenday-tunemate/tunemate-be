@@ -27,12 +27,12 @@
         WHERE id = #{id}
     </select>
 
-    <insert id="create" parameterType="com.tunemate.be.domain.auth.domain.emailAuth.CreateEmailAuthDTO">
+    <insert id="create" parameterType="com.tunemate.be.domain.auth.domain.emailAuth.EmailAuth">
         INSERT INTO email_auth (email, token, expired_at)
-        VALUES (#{email}, #{token}, #{expiredAt})
+        VALUES (#{email}, #{token}, #{expired_at})
     </insert>
 
-    <update id="update" parameterType="com.tunemate.be.domain.auth.domain.emailAuth.UpdateEmailAuthDTO">
+    <update id="update" parameterType="com.tunemate.be.domain.auth.domain.emailAuth.EmailAuth">
         UPDATE email_auth
         SET email      = COALESCE(#{email}, email),
             token      = COALESCE(#{token}, token),
