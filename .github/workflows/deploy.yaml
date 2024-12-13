@@ -2,7 +2,7 @@ name: deploy
 on:
   push:
     branches:
-      - "chore/11/cicd"
+      - "dev"
 
 permissions:
   packages: write
@@ -55,5 +55,5 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/potenday-tunemate/tunemate-db:latest
-            ghcr.io/potenday-tunemate/tunemate-db:${{ github.sha }}
+            ghcr.io/potenday-tunemate/tunemate-be:latest
+            ghcr.io/potenday-tunemate/tunemate-be:${{ github.sha }}
