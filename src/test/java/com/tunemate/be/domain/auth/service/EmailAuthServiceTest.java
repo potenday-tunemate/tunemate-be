@@ -3,134 +3,170 @@ package com.tunemate.be.domain.auth.service;
 import com.tunemate.be.domain.auth.domain.CreateEmailAuthDTO;
 import com.tunemate.be.domain.auth.domain.EmailAuth;
 import com.tunemate.be.domain.auth.domain.EmailAuthMapper;
+import com.tunemate.be.domain.auth.domain.UpdateEmailAuthDTO;
+import com.tunemate.be.domain.email.service.EmailService;
+import com.tunemate.be.global.exceptions.CustomException;
+import jakarta.mail.MessagingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.MariaDBContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.thymeleaf.context.Context;
 
-import javax.sql.DataSource;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.Map;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
-@Testcontainers
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 public class EmailAuthServiceTest {
-    @Container
-    private static final MariaDBContainer<?> mariadbContainer = new MariaDBContainer<>("mariadb:10.7")
-            .withDatabaseName("testDB")
-            .withUsername("testuser")
-            .withPassword("testpass");
-
-    @DynamicPropertySource
-    static void setDatasourceProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", mariadbContainer::getJdbcUrl);
-        registry.add("spring.datasource.username", mariadbContainer::getUsername);
-        registry.add("spring.datasource.password", mariadbContainer::getPassword);
-    }
-
-    @Autowired
-    private EmailAuthService emailAuthService;
-
-    @Autowired
+    @Mock
     private EmailAuthMapper emailAuthMapper;
 
-    @Autowired
-    private DataSource dataSource;
+    @Mock
+    private EmailService emailService;
+
+    @InjectMocks
+    private EmailAuthService emailAuthService;
+
+    private EmailAuth emailAuth;
 
     @BeforeEach
-    void runExternalCommand() throws Exception {
-        ProcessBuilder builder = new ProcessBuilder();
-        Map<String, String> env = builder.environment();
-        String mariadbUrl = String.format("%s:%s@tcp(%s:%d)/%s", mariadbContainer.getUsername(), mariadbContainer.getPassword(), mariadbContainer.getHost(), mariadbContainer.getMappedPort(3306), mariadbContainer.getDatabaseName());
-        System.out.println(mariadbUrl);
-        env.put("GOOSE_MIGRATION_DIR", "./migrations");
-
-        builder.command("goose", "mysql", mariadbUrl, "up");
-
-        Process process = builder.start();
-
-
-        StreamGobbler outputGobbler = new StreamGobbler(process.getInputStream(), "OUTPUT");
-        StreamGobbler errorGobbler = new StreamGobbler(process.getErrorStream(), "ERROR");
-
-        outputGobbler.start();
-        errorGobbler.start();
-
-        int exitCode = process.waitFor();
-
-        outputGobbler.join();
-        errorGobbler.join();
-
-        if (exitCode != 0) {
-            throw new RuntimeException("Migration failed with exit code: " + exitCode);
-        }
+    void setUp() {
+        emailAuth = EmailAuth.builder()
+                .id(1L)
+                .email("test@example.com")
+                .token("oldToken")
+                .expired_at(Timestamp.from(Instant.now().plusSeconds(3600)))
+                .build();
     }
 
     @Test
-    void testCreateEmailAuth_Success() {
-        Timestamp expirationTime = Timestamp.from(Instant.now().plusSeconds(3600));
-        CreateEmailAuthDTO dto = new CreateEmailAuthDTO("test@naver.com", "test", expirationTime);
-        emailAuthService.createEmailAuth(dto);
-        EmailAuth auth = emailAuthService.getEmailAuthByToken("test");
-        assertNotNull(auth, "EmailAuth should not be null");
-        assertNotNull(auth.getId(), "EmailAuth id should not be null");
-        assertEquals("test", auth.getToken(), "created auth token is not equal");
-        assertEquals("test@naver.com", auth.getEmail(), "created auth email is not equal");
-        Instant now = Instant.now();
-        Instant expectedExpiration = now.plusSeconds(3600);
-        Instant actualExpiration = auth.getExpired_at().toInstant();
-        long secondsDifference = Math.abs(expectedExpiration.getEpochSecond() - actualExpiration.getEpochSecond());
-        assertTrue(secondsDifference < 5, "Expiration time should be approximately 1 hour from now");
+    void getEmailAuthByToken_존재하면_반환() {
+        when(emailAuthMapper.findByToken("token")).thenReturn(Optional.of(emailAuth));
+
+        EmailAuth result = emailAuthService.getEmailAuthByToken("token");
+        assertThat(result).isEqualTo(emailAuth);
     }
 
     @Test
-    void testCreateEmailAuth_ShouldFail_IF_Email_Exists() {
-        Timestamp expirationTime = Timestamp.from(Instant.now().plusSeconds(3600));
-        CreateEmailAuthDTO dto = new CreateEmailAuthDTO("test@naver.com", "test", expirationTime);
-        emailAuthService.createEmailAuth(dto);
+    void getEmailAuthByToken_존재하지않으면_예외발생() {
+        when(emailAuthMapper.findByToken("invalid")).thenReturn(Optional.empty());
 
-        try {
-            emailAuthService.createEmailAuth(dto);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            assertNotNull(e, "Email Auth creation failed");
-        }
+        assertThatThrownBy(() -> emailAuthService.getEmailAuthByToken("invalid"))
+                .isInstanceOf(CustomException.class)
+                .hasMessage("이메일 인증을 찾을 수 없습니다.")
+                .extracting("statusCode")
+                .isEqualTo(HttpStatus.NOT_FOUND);
     }
 
+    @Test
+    void getEmailAuthByEmail_존재하면_반환() {
+        when(emailAuthMapper.findByEmail("test@example.com")).thenReturn(Optional.of(emailAuth));
 
-    private static class StreamGobbler extends Thread {
-        private final BufferedReader reader;
-        private final String streamType;
+        EmailAuth result = emailAuthService.getEmailAuthByEmail("test@example.com");
+        assertThat(result).isEqualTo(emailAuth);
+    }
 
-        public StreamGobbler(java.io.InputStream inputStream, String streamType) {
-            this.reader = new BufferedReader(new InputStreamReader(inputStream));
-            this.streamType = streamType;
-        }
+    @Test
+    void getEmailAuthByEmail_존재하지않으면_예외발생() {
+        when(emailAuthMapper.findByEmail("notfound@example.com")).thenReturn(Optional.empty());
 
-        @Override
-        public void run() {
-            try {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    if ("ERROR".equals(streamType)) {
-                        System.err.println("[" + streamType + "] " + line);
-                    } else {
-                        System.out.println("[" + streamType + "] " + line);
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        assertThatThrownBy(() -> emailAuthService.getEmailAuthByEmail("notfound@example.com"))
+                .isInstanceOf(CustomException.class);
+    }
+
+    @Test
+    void getEmailAuthById_존재하면_반환() {
+        when(emailAuthMapper.findById(1L)).thenReturn(Optional.of(emailAuth));
+
+        EmailAuth result = emailAuthService.getEmailAuthById(1L);
+        assertThat(result).isEqualTo(emailAuth);
+    }
+
+    @Test
+    void getEmailAuthById_존재하지않으면_예외발생() {
+        when(emailAuthMapper.findById(999L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> emailAuthService.getEmailAuthById(999L))
+                .isInstanceOf(CustomException.class);
+    }
+
+    @Test
+    void updateEmailAuth_정상동작() {
+        UpdateEmailAuthDTO dto = UpdateEmailAuthDTO.builder()
+                .id(emailAuth.getId())
+                .token("newToken")
+                .expiredAt(Instant.now().plusSeconds(7200))
+                .build();
+
+        when(emailAuthMapper.findById(dto.getId())).thenReturn(Optional.of(emailAuth));
+
+        emailAuthService.updateEmailAuth(dto);
+
+        verify(emailAuthMapper, times(1)).update(dto);
+    }
+
+    @Test
+    void createOrUpdateEmailAuth_이미존재하는경우_update() throws MessagingException {
+        CreateEmailAuthDTO dto = new CreateEmailAuthDTO();
+        dto.setEmail("test@example.com");
+
+        when(emailAuthMapper.findByEmail(dto.getEmail())).thenReturn(Optional.of(emailAuth));
+
+        emailAuthService.createOrUpdateEmailAuth(dto);
+
+        // 존재하면 update를 수행
+        verify(emailAuthMapper, times(1)).update(any(UpdateEmailAuthDTO.class));
+        verify(emailAuthMapper, times(0)).create(dto);
+        verify(emailService, times(0)).sendEmail(anyString(), anyString(), anyString(), any(Context.class));
+    }
+
+    @Test
+    void createOrUpdateEmailAuth_존재하지않는경우_create() throws MessagingException {
+        CreateEmailAuthDTO dto = new CreateEmailAuthDTO();
+        dto.setEmail("new@example.com");
+
+        // findByEmail이 Optional.empty()를 반환하도록 해서 CustomException(2002번 코드) 발생 상황을 모의
+        when(emailAuthMapper.findByEmail(dto.getEmail())).thenReturn(Optional.empty());
+
+        emailAuthService.createOrUpdateEmailAuth(dto);
+
+        // 존재하지 않으므로 create 호출, 이메일 서비스도 호출
+        verify(emailAuthMapper, times(1)).create(dto);
+        verify(emailService, times(1)).sendEmail(eq(dto.getEmail()), eq("[Tunemate] 이메일 인증번호입니다."), eq("emailAuth"), any(Context.class));
+    }
+
+    @Test
+    void createOrUpdateEmailAuth_생성중_알수없는예외발생시_CustomException() {
+        CreateEmailAuthDTO dto = new CreateEmailAuthDTO();
+        dto.setEmail("new@example.com");
+
+        when(emailAuthMapper.findByEmail(dto.getEmail())).thenReturn(Optional.empty());
+        // create 호출 시 예외 발생 시키기
+        doThrow(new RuntimeException("DB error")).when(emailAuthMapper).create(dto);
+
+        assertThatThrownBy(() -> emailAuthService.createOrUpdateEmailAuth(dto))
+                .isInstanceOf(CustomException.class)
+                .hasMessage("이메일 인증 생성이 실패했습니다.");
+    }
+
+    @Test
+    void createOrUpdateEmailAuth_조회중_알수없는예외발생시_CustomException() {
+        CreateEmailAuthDTO dto = new CreateEmailAuthDTO();
+        dto.setEmail("error@example.com");
+
+        when(emailAuthMapper.findByEmail(dto.getEmail())).thenThrow(new RuntimeException("Unknown error"));
+
+        assertThatThrownBy(() -> emailAuthService.createOrUpdateEmailAuth(dto))
+                .isInstanceOf(CustomException.class)
+                .hasMessage("이메일 인증 처리 중 오류가 발생했습니다.");
     }
 }

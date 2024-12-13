@@ -8,5 +8,12 @@ import java.util.Optional;
 public interface EmailAuthMapper {
     Optional<EmailAuth> findByToken(String token);
 
+    Optional<EmailAuth> findByEmail(String email);
+
+    Optional<EmailAuth> findById(Long id);
+
+
+    void update(UpdateEmailAuthDTO dto);
+
     void create(CreateEmailAuthDTO dto);
 }

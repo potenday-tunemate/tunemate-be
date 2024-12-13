@@ -3,6 +3,7 @@ package com.tunemate.be.domain.auth.controller;
 import com.tunemate.be.domain.auth.domain.CreateEmailAuthDTO;
 import com.tunemate.be.domain.auth.domain.EmailAuth;
 import com.tunemate.be.domain.auth.service.EmailAuthService;
+import com.tunemate.be.global.responses.OkResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,8 +24,8 @@ public class EmailAuthController {
     }
 
     @PostMapping("/email")
-    public ResponseEntity<Void> CreateEmailAuth(@RequestBody CreateEmailAuthDTO dto) throws ExecutionException, InterruptedException {
-        emailAuthService.createEmailAuth(dto);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<OkResponse<Void>> CreateEmailAuth(@RequestBody CreateEmailAuthDTO dto) throws ExecutionException, InterruptedException {
+        emailAuthService.createOrUpdateEmailAuth(dto);
+        return ResponseEntity.ok(new OkResponse<>(true, null));
     }
 }
