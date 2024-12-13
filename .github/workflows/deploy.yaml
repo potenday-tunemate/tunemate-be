@@ -26,6 +26,7 @@ jobs:
 
       - name: Migrate DB
         run: |
+          export DB_NAME="${{ secrets.DB_NAME }}"
           export DB_USERNAME="${{ secrets.DB_USERNAME }}"
           export DB_ROOT_PASSWORD="${{ secrets.DB_ROOT_PASSWORD }}"
           export DB_PASSWORD="${{ secrets.DB_PASSWORD }}"
@@ -85,6 +86,7 @@ jobs:
           key: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
           port: ${{ secrets.REMOTE_SSH_PORT }}
           script: |
+            export DB_NAME="${{ secrets.DB_NAME }}"
             export DB_USERNAME="${{ secrets.DB_USERNAME }}"
             export DB_ROOT_PASSWORD="${{ secrets.DB_ROOT_PASSWORD }}"
             export DB_PASSWORD="${{ secrets.DB_PASSWORD }}"
