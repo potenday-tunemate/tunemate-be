@@ -12,13 +12,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.20 # 원하는 Go 버전
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           distribution: "temurin"
           java-version: "17"
-
+      - name: Install Goose
+        run: go install github.com/pressly/goose/v3/cmd/goose@latest
       - name: Cache Gradle dependencies
         uses: actions/cache@v3
         with:
