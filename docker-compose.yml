@@ -26,9 +26,13 @@ services:
     depends_on:
       - db
     environment:
-      SPRING_DATASOURCE_URL: "jdbc:mariadb://${DB_HOST}:${DB_PORT}/${DB_NAME}"
-      SPRING_DATASOURCE_USERNAME: "${DB_USERNAME}"
-      SPRING_DATASOURCE_PASSWORD: "${DB_PASSWORD}"
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      SMTP_USERNAME: ${SMTP_USERNAME}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
     ports:
       - "8080:8080"
     restart: always

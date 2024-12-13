@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.tunemate.be.domain.auth.domain.EmailAuthMapper">
+    <resultMap id="EmailAuthResultMap" type="com.tunemate.be.domain.auth.domain.EmailAuth">
+        <id property="id" column="id"/>
+        <result property="email" column="email"/>
+        <result property="token" column="token"/>
+        <result property="expiredAt" column="expired_at"/>
+    </resultMap>
+    <select id="findByToken" resultType="com.tunemate.be.domain.auth.domain.EmailAuth">
+        SELECT *
+        FROM email_auth
+        WHERE token = #{token}
+    </select>
+
+    <select id="findByEmail" resultType="com.tunemate.be.domain.auth.domain.EmailAuth">
+        SELECT *
+        FROM email_auth
+        WHERE email = #{email}
+    </select>
+
+    <select id="findById" resultType="com.tunemate.be.domain.auth.domain.EmailAuth">
+        SELECT *
+        FROM email_auth
+        WHERE id = #{id}
+    </select>
+
+    <insert id="create" parameterType="com.tunemate.be.domain.auth.domain.CreateEmailAuthDTO">
+        INSERT INTO email_auth (email, token, expired_at)
+        VALUES (#{email}, #{token}, #{expiredAt})
+    </insert>
+
+    <update id="update" parameterType="com.tunemate.be.domain.auth.domain.UpdateEmailAuthDTO">
+        UPDATE email_auth
+        SET email      = COALESCE(#{email}, email),
+            token      = COALESCE(#{token}, token),
+            expired_at = COALESCE(#{expired_at}, expired_at)
+        WHERE id = #{id};
+    </update>
+</mapper>

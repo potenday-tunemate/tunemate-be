@@ -1,4 +1,4 @@
-package com.tunemate.be.domain.health_check.presentation;
+package com.tunemate.be.domain.health_check.controller;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
