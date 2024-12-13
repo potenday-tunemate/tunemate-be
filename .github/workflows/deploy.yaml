@@ -65,16 +65,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-    - name: Export environment variables
-      run: |
-        export DB_USERNAME="${{ secrets.DB_USERNAME }}"
-        export DB_ROOT_PASSWORD="${{ secrets.DB_ROOT_PASSWORD }}"
-        export DB_PASSWORD="${{ secrets.DB_PASSWORD }}"
-        export DB_HOST="${{ secrets.DB_HOST }}"
-        export JWT_SECRET="${{ secrets.JWT_SECRET }}"
-        export SMTP_USERNAME="${{ secrets.SMTP_USERNAME }}"
-        export SMTP_PASSWORD="${{ secrets.SMTP_PASSWORD }}"
-        export GIT_COMMIT_HASH="${{ github.sha }}"
+      - name: Export environment variables
+        run: |
+          export DB_USERNAME="${{ secrets.DB_USERNAME }}"
+          export DB_ROOT_PASSWORD="${{ secrets.DB_ROOT_PASSWORD }}"
+          export DB_PASSWORD="${{ secrets.DB_PASSWORD }}"
+          export DB_HOST="${{ secrets.DB_HOST }}"
+          export JWT_SECRET="${{ secrets.JWT_SECRET }}"
+          export SMTP_USERNAME="${{ secrets.SMTP_USERNAME }}"
+          export SMTP_PASSWORD="${{ secrets.SMTP_PASSWORD }}"
+          export GIT_COMMIT_HASH="${{ github.sha }}"
 
       - name: Docker Stack Deploy
         uses: cssnr/stack-deploy-action@v1
