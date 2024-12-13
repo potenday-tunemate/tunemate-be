@@ -67,7 +67,15 @@ jobs:
 
       - name: create env file
         run: |
-          echo "GIT_COMMIT_HASH=${{ github.sha }}" >> ./envfile
+          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> ./.env
+          echo "DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}" >> ./.env
+          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> ./.env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> ./.env
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> ./.env
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> ./.env
+          echo "SMTP_USERNAME=${{ secrets.SMTP_USERNAME }}" >> ./.env
+          echo "SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD}}" >> ./.env
+          echo "GIT_COMMIT_HASH=${{ github.sha }}" >> ./.env
       - name: Docker Stack Deploy
         uses: cssnr/stack-deploy-action@v1
         with:
@@ -79,4 +87,4 @@ jobs:
           host: tunemate.site
           user: deploy
           ssh_key: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
-          env_file: ./envfile
+          env_file: ./.env
