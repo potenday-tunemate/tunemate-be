@@ -169,4 +169,35 @@ public class EmailAuthServiceTest {
                 .isInstanceOf(CustomException.class)
                 .hasMessage("이메일 인증 처리 중 오류가 발생했습니다.");
     }
+
+    @Test
+    void verifyEmailAuth_존재하지않는토큰일때_예외발생() {
+        String token = "notExistToken";
+        when(emailAuthMapper.findByToken(token)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> emailAuthService.verifyEmailAuth(token))
+                .isInstanceOf(CustomException.class)
+                .hasMessage("이메일 인증을 찾을 수 없습니다.")
+                .extracting("statusCode").isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void verifyEmailAuth_만료된토큰일때_예외발생() {
+        emailAuth.setExpired_at(Timestamp.from(Instant.now().minusSeconds(10)));
+
+        when(emailAuthMapper.findByToken("expiredToken")).thenReturn(Optional.of(emailAuth));
+
+        assertThatThrownBy(() -> emailAuthService.verifyEmailAuth("expiredToken"))
+                .isInstanceOf(CustomException.class)
+                .hasMessage("이메일 인증이 만료되었습니다.")
+                .extracting("statusCode").isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
+    @Test
+    void verifyEmailAuth_정상토큰일때_반환() {
+        when(emailAuthMapper.findByToken("validToken")).thenReturn(Optional.of(emailAuth));
+
+        EmailAuth result = emailAuthService.verifyEmailAuth("validToken");
+        assertThat(result).isEqualTo(emailAuth);
+    }
 }

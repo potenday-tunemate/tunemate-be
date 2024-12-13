@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.context.Context;
 
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -88,5 +89,14 @@ public class EmailAuthService {
         } catch (Exception e) {
             throw new CustomException("이메일 인증 처리 중 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR, 2004, e.getMessage());
         }
+    }
+
+    public EmailAuth verifyEmailAuth(String token) {
+        EmailAuth emailAuth = emailAuthMapper.findByToken(token)
+                .orElseThrow(() -> new CustomException("이메일 인증을 찾을 수 없습니다.", HttpStatus.NOT_FOUND, 2002, ""));
+        if (emailAuth.getExpired_at().before(Timestamp.from(Instant.now()))) {
+            throw new CustomException("이메일 인증이 만료되었습니다.", HttpStatus.UNPROCESSABLE_ENTITY, 2008, "");
+        }
+        return emailAuth;
     }
 }

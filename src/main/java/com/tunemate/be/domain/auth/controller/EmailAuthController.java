@@ -28,4 +28,9 @@ public class EmailAuthController {
         emailAuthService.createOrUpdateEmailAuth(dto);
         return ResponseEntity.ok(new OkResponse<>(true, null));
     }
+
+    @PostMapping("/email/verify")
+    public ResponseEntity<OkResponse<EmailAuth>> VerifyEmailAuth(@RequestParam String token) {
+        return ResponseEntity.ok(new OkResponse<>(true, emailAuthService.verifyEmailAuth(token)));
+    }
 }
