@@ -1,28 +1,25 @@
-version: '3.8'
+version: "3.8" # Ensure you're using a version compatible with Swarm
 
 services:
   db:
     image: mariadb:10.7
-    container_name: db
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MYSQL_DATABASE: ${DB_NAME}
       MYSQL_USER: ${DB_USERNAME}
       MYSQL_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "${DB_PORT}:${DB_PORT}"
+      - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
-    healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD}" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
+    deploy:
+      update_config:
+        order: start-first
+      restart_policy:
+        condition: on-failure
 
   tunemate-be:
-    build: .
-    container_name: tunemate-be
+    image: ghcr.io/potenday-tunemate/tunemate-be:${GIT_COMMIT_HASH:-latest}
     depends_on:
       - db
     environment:
@@ -36,7 +33,10 @@ services:
       SMTP_PASSWORD: ${SMTP_PASSWORD}
     ports:
       - "8080:8080"
-    restart: always
-
+    deploy:
+      update_config:
+        order: start-first
+      restart_policy:
+        condition: on-failure
 volumes:
   db_data:

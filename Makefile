@@ -1,4 +1,3 @@
-include .env
 status:
 	goose mysql "${URL}" status
 
