@@ -1,7 +1,7 @@
 package com.tunemate.be.domain.auth.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tunemate.be.domain.auth.domain.emailAuth.CreateEmailAuthDTO;
+import com.tunemate.be.domain.auth.domain.emailAuth.EmailAuth;
 import com.tunemate.be.domain.auth.domain.emailAuth.EmailAuthMapper;
 import com.tunemate.be.utils.StreamGobbler;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,10 +22,10 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Map;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -48,6 +48,9 @@ public class EmailAuthControllerTest {
         registry.add("spring.datasource.url", mariaDBContainer::getJdbcUrl);
         registry.add("spring.datasource.username", mariaDBContainer::getUsername);
         registry.add("spring.datasource.password", mariaDBContainer::getPassword);
+        registry.add("jwt.secret", () -> "thisIsASecretKeyThatShouldBeAtLeast32BytesLongOkWhynotWork");
+        registry.add("jwt.access_token.time", () -> 24);
+        registry.add("jwt.refresh_token.time", () -> 48);
     }
 
     @Autowired
@@ -88,24 +91,10 @@ public class EmailAuthControllerTest {
         }
     }
 
-    @Test
-    void testFindEmailAuthByToken() throws Exception {
-        CreateEmailAuthDTO dto = new CreateEmailAuthDTO();
-        dto.setEmail("test@example.com");
-        dto.setToken("test");
-        dto.setExpiredAt(Instant.now().plusSeconds(3600));
-        emailAuthMapper.create(dto);
-
-        mockMvc.perform(get("/auth/email"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.email").value("test@example.com"))
-                .andExpect(jsonPath("$.token").value("test"));
-    }
 
     @Test
     void testCreateEmailAuth() throws Exception {
-        CreateEmailAuthDTO dto = new CreateEmailAuthDTO();
-        dto.setEmail("new@example.com");
+        EmailAuth dto = EmailAuth.builder().email("test@example.com").build();
 
         mockMvc.perform(post("/auth/email")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -117,10 +106,7 @@ public class EmailAuthControllerTest {
 
     @Test
     void testVerifyEmailAuth() throws Exception {
-        CreateEmailAuthDTO dto = new CreateEmailAuthDTO();
-        dto.setEmail("test@example.com");
-        dto.setToken("test");
-        dto.setExpiredAt(Instant.now().plusSeconds(3600));
+        EmailAuth dto = EmailAuth.builder().email("test@example.com").token("test").expired_at(Timestamp.from(Instant.now().plusSeconds(3600))).build();
         emailAuthMapper.create(dto);
 
         mockMvc.perform(post("/auth/email/verify")

@@ -18,12 +18,8 @@ public class EmailAuthController {
         this.emailAuthService = emailAuthService;
     }
 
-    @GetMapping("")
-    public ResponseEntity<EmailAuth> FindEmailAuthByToken() {
-        return ResponseEntity.ok(emailAuthService.getEmailAuthByToken("test"));
-    }
 
-    @PostMapping("")
+    @PostMapping()
     public ResponseEntity<OkResponse<Void>> CreateEmailAuth(@RequestBody CreateEmailAuthDTO dto) throws ExecutionException, InterruptedException {
         emailAuthService.createOrUpdateEmailAuth(dto);
         return ResponseEntity.ok(new OkResponse<>(true, null));

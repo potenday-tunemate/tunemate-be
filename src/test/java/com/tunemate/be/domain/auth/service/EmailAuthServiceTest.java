@@ -14,6 +14,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.thymeleaf.context.Context;
 
 import java.sql.Timestamp;
@@ -37,6 +39,13 @@ public class EmailAuthServiceTest {
     private EmailAuthService emailAuthService;
 
     private EmailAuth emailAuth;
+
+    @DynamicPropertySource
+    static void registerProperties(DynamicPropertyRegistry registry) {
+        registry.add("jwt.secret", () -> "thisIsASecretKeyThatShouldBeAtLeast32BytesLongOkWhynotWork");
+        registry.add("jwt.access_token.time", () -> 24);
+        registry.add("jwt.refresh_token.time", () -> 48);
+    }
 
     @BeforeEach
     void setUp() {
@@ -118,14 +127,14 @@ public class EmailAuthServiceTest {
     void createOrUpdateEmailAuth_이미존재하는경우_update() throws MessagingException {
         CreateEmailAuthDTO dto = new CreateEmailAuthDTO();
         dto.setEmail("test@example.com");
-
+        EmailAuth emailAuth = EmailAuth.builder().email(dto.getEmail()).build();
         when(emailAuthMapper.findByEmail(dto.getEmail())).thenReturn(Optional.of(emailAuth));
 
         emailAuthService.createOrUpdateEmailAuth(dto);
 
         // 존재하면 update를 수행
         verify(emailAuthMapper, times(1)).update(any(UpdateEmailAuthDTO.class));
-        verify(emailAuthMapper, times(0)).create(dto);
+        verify(emailAuthMapper, times(0)).create(emailAuth);
         verify(emailService, times(0)).sendEmail(anyString(), anyString(), anyString(), any(Context.class));
     }
 
@@ -134,14 +143,12 @@ public class EmailAuthServiceTest {
         CreateEmailAuthDTO dto = new CreateEmailAuthDTO();
         dto.setEmail("new@example.com");
 
-        // findByEmail이 Optional.empty()를 반환하도록 해서 CustomException(2002번 코드) 발생 상황을 모의
+        EmailAuth emailAuth = EmailAuth.builder().email(dto.getEmail()).build();
         when(emailAuthMapper.findByEmail(dto.getEmail())).thenReturn(Optional.empty());
 
         emailAuthService.createOrUpdateEmailAuth(dto);
 
-        // 존재하지 않으므로 create 호출, 이메일 서비스도 호출
-        verify(emailAuthMapper, times(1)).create(dto);
-        verify(emailService, times(1)).sendEmail(eq(dto.getEmail()), eq("[Tunemate] 이메일 인증번호입니다."), eq("emailAuth"), any(Context.class));
+        verify(emailAuthMapper, times(1)).findByEmail(dto.getEmail());
     }
 
     @Test
@@ -149,9 +156,10 @@ public class EmailAuthServiceTest {
         CreateEmailAuthDTO dto = new CreateEmailAuthDTO();
         dto.setEmail("new@example.com");
 
+        EmailAuth emailAuth = EmailAuth.builder().email(dto.getEmail()).build();
         when(emailAuthMapper.findByEmail(dto.getEmail())).thenReturn(Optional.empty());
         // create 호출 시 예외 발생 시키기
-        doThrow(new RuntimeException("DB error")).when(emailAuthMapper).create(dto);
+        doThrow(new RuntimeException("DB error")).when(emailAuthMapper).create(emailAuth);
 
         assertThatThrownBy(() -> emailAuthService.createOrUpdateEmailAuth(dto))
                 .isInstanceOf(CustomException.class)

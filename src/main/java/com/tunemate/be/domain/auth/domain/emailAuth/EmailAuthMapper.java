@@ -15,5 +15,5 @@ public interface EmailAuthMapper {
 
     void update(UpdateEmailAuthDTO dto);
 
-    void create(CreateEmailAuthDTO dto);
+    void create(EmailAuth emailAuth);
 }
