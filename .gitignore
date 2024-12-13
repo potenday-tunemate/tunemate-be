@@ -5,6 +5,8 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 .envrc
+# 소희 db 파일
+tunemate-be/docker-compose.yml
 ### STS ###
 .apt_generated
 .classpath
