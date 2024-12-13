@@ -80,7 +80,7 @@ jobs:
         with:
           host: ${{ secrets.REMOTE_SSH_HOST }}
           username: ${{ secrets.REMOTE_SSH_USERNAME }}
-          key: ${{ secrets.DEPLOY_SSH_PRIVATEKEY}}
+          key: ${{ secrets.DEPLOY_SSH_PRIVATEKEY }}
           port: ${{ secrets.REMOTE_SSH_PORT }}
           script: |
             export DB_USERNAME="${{ secrets.DB_USERNAME }}"
