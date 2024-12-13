@@ -1,18 +1,19 @@
-package com.tunemate.be.domain.auth.domain;
+package com.tunemate.be.domain.auth.domain.emailAuth;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.Instant;
 
 @Builder
 @Getter
 @Setter
-public class UpdateEmailAuthDTO {
-    private Long id;
+@AllArgsConstructor
+@NoArgsConstructor
+public class CreateEmailAuthDTO {
+    private String email;
     private String token;
+
     @JsonProperty("expired_at")
     private Instant expiredAt;
 }

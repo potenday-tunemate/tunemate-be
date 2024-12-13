@@ -1,8 +1,8 @@
 package com.tunemate.be.domain.auth.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tunemate.be.domain.auth.domain.CreateEmailAuthDTO;
-import com.tunemate.be.domain.auth.domain.EmailAuthMapper;
+import com.tunemate.be.domain.auth.domain.emailAuth.CreateEmailAuthDTO;
+import com.tunemate.be.domain.auth.domain.emailAuth.EmailAuthMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
