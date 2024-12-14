@@ -1,76 +1,26 @@
 package com.tunemate.be.domain.album.controller;
 
-import java.util.List;
+import com.tunemate.be.domain.album.domain.album.Album;
+import com.tunemate.be.domain.album.service.AlbumService;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.tunemate.be.global.responses.OkResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tunemate.be.domain.album.domain.album.*;
-
-import com.tunemate.be.domain.album.service.AlbumService;
-import com.tunemate.be.domain.user.domain.user.CreateUserDTO;
-import com.tunemate.be.domain.user.domain.user.User;
-
-import jakarta.servlet.http.HttpSession;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-
 @RestController
-@RequestMapping("album/")
+@RequestMapping("/album")
 public class AlbumController {
+    private final AlbumService albumService;
 
-    @Autowired
-    private AlbumService albumService;
-
-    @PostMapping("registAlbumInfo")
-    public ResponseEntity<Void> registAlbumInfo(@RequestBody AlbumDto dto) {
-  
-        albumService.registAlbumInfo(dto);
-        return ResponseEntity.ok().build();
+    public AlbumController(AlbumService albumService) {
+        this.albumService = albumService;
     }
 
-    @PostMapping("registAlbumReview")
-    public ResponseEntity<Void> registAlbumReview(HttpSession session,@RequestParam("id")int id,@RequestBody AlbumReviewDto dto, @RequestParam List<Integer> selectedTagId) {
-        User sessionUser = (User)session.getAttribute("loginUser");
-        dto.setUser_id(sessionUser.getId().intValue());        
-        dto.setAlbum_id(id);
-
-        albumService.registAlbumReview(dto);
-
-        selectedTagId.forEach(tagId -> {
-            AlbumReviewTagDto albumReviewTagDto = new AlbumReviewTagDto();
-            albumReviewTagDto.setTag_id(tagId);
-            int reviewId = dto.getId();
-            albumReviewTagDto.setReview_id(reviewId);
-            albumService.registAlbumReviewTag(albumReviewTagDto);
-        });
-        
-        return ResponseEntity.ok().build();
+    @GetMapping("/{id}")
+    public ResponseEntity<OkResponse<Album>> getAlbumById(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(new OkResponse<>(true, albumService.getAlbumById(id)));
     }
-
-    //특정앨범 정보
-    @GetMapping("info")
-    public ResponseEntity<AlbumDto> albumListAll(@RequestParam("id")int id) {
-        AlbumDto album = albumService.albumDetailInfo(id);
-        return ResponseEntity.ok(album);
-    }
-
-    //리뷰태그
-    @GetMapping("tagList")
-    public ResponseEntity<List<ReviewTagDto>> reviewTagList() {
-        List<ReviewTagDto> tagList = albumService.reviewTagList();
-        return ResponseEntity.ok(tagList);
-    }
-
-    
-
-
-
-
 }

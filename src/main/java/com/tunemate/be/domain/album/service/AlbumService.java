@@ -1,41 +1,38 @@
 package com.tunemate.be.domain.album.service;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import com.tunemate.be.domain.album.domain.album.Album;
+import com.tunemate.be.domain.album.domain.album.AlbumMapper;
+import com.tunemate.be.domain.album.domain.album.CreateAlbumDTO;
+import com.tunemate.be.domain.artist.domain.artist.Artist;
+import com.tunemate.be.domain.artist.service.ArtistService;
+import com.tunemate.be.global.exceptions.CustomException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
-import com.tunemate.be.domain.album.domain.album.AlbumDto;
-import com.tunemate.be.domain.album.domain.album.AlbumReviewDto;
-import com.tunemate.be.domain.album.domain.album.*;
-
-import com.tunemate.be.domain.album.domain.album.AlbumSqlMapper;
 
 @Service
 public class AlbumService {
+    private final AlbumMapper albumMapper;
+    private final ArtistService artistService;
 
-    @Autowired
-    private AlbumSqlMapper albumSqlMapper;
-
-    public void registAlbumInfo(AlbumDto dto) {
-        albumSqlMapper.registAlbumInfoProcess(dto);
+    public AlbumService(AlbumMapper albumMapper, ArtistService artistService) {
+        this.albumMapper = albumMapper;
+        this.artistService = artistService;
     }
 
-    public void registAlbumReview(AlbumReviewDto dto) {
-        albumSqlMapper.registAlbumReviewProcess(dto);
-
+    public void createAlbum(CreateAlbumDTO dto) {
+        Artist artist = artistService.getArtistById(dto.getArtist());
+        Album album = Album.builder().title(dto.getTitle()).
+                year(dto.getYear()).
+                coverImg(dto.getCoverImg()).
+                artist(artist).build();
+        try {
+            albumMapper.create(album);
+        } catch (Exception e) {
+            throw new CustomException("앨범 생성에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR, 5002, "");
+        }
     }
 
-    public AlbumDto albumDetailInfo(int id){
-        return albumSqlMapper.albumInfo(id);
+    public Album getAlbumById(Long albumId) {
+        return albumMapper.findById(albumId).orElseThrow(() -> new CustomException("앨범을 찾지 못했습니다.", HttpStatus.NOT_FOUND, 5001, ""));
     }
-
-    public List<ReviewTagDto> reviewTagList(){
-        return albumSqlMapper.reviewTagList();
-    }
-
-    public void registAlbumReviewTag(AlbumReviewTagDto albumReviewTagDto){
-        albumSqlMapper.registAlbumReviewTagProcess(albumReviewTagDto);
-    }
-    
 }

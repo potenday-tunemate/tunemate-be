@@ -1,17 +1,28 @@
 package com.tunemate.be.domain.artist.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.tunemate.be.domain.artist.domain.artist.Artist;
+import com.tunemate.be.domain.artist.domain.artist.ArtistMapper;
+import com.tunemate.be.global.exceptions.CustomException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
-import com.tunemate.be.domain.artist.domain.artist.ArtistDto;
-import com.tunemate.be.domain.artist.domain.artist.ArtistSqlMapper;
 
 @Service
 public class ArtistService {
-    @Autowired
-    private ArtistSqlMapper artistSqlMapper;
+    private final ArtistMapper artistMapper;
 
-    public void registArtistInfo(ArtistDto dto) {
-        artistSqlMapper.registArtistInfoProcess(dto);
+    public ArtistService(ArtistMapper artistMapper) {
+        this.artistMapper = artistMapper;
+    }
+
+    public Artist getArtistById(Long id) {
+        return artistMapper.findById(id).orElseThrow(() -> new CustomException("아티스트를 찾지 못했습니다.", HttpStatus.NOT_FOUND, 6001, ""));
+    }
+
+    public void createArtist(Artist artist) {
+        try {
+            artistMapper.create(artist);
+        } catch (Exception e) {
+            throw new CustomException("아티스트 생성에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR, 6002, "");
+        }
     }
 }
