@@ -2,6 +2,7 @@ package com.tunemate.be.domain.album.controller;
 
 import com.tunemate.be.domain.album.domain.album.Album;
 import com.tunemate.be.domain.album.service.AlbumService;
+
 import com.tunemate.be.global.responses.OkResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
