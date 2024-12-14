@@ -10,6 +10,7 @@ import com.tunemate.be.domain.album.domain.album.*;
 
 import com.tunemate.be.domain.album.service.AlbumService;
 import com.tunemate.be.domain.user.domain.user.CreateUserDTO;
+import com.tunemate.be.domain.user.domain.user.User;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -28,24 +29,21 @@ public class AlbumController {
     private AlbumService albumService;
 
     @PostMapping("registAlbumInfo")
-    public ResponseEntity<Void> registAlbumInfo(@RequestBody AlbumDto dto,HttpSession session) {
-        CreateUserDTO sessionUser = (CreateUserDTO)session.getAttribute("loginUser");
-        dto.setId(sessionUser.getId());
-
+    public ResponseEntity<Void> registAlbumInfo(@RequestBody AlbumDto dto) {
+  
         albumService.registAlbumInfo(dto);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("registAlbumReview")
-    public ResponseEntity<Void> registAlbumReview(HttpSession session,@RequestParam("id")int id,@RequestBody AlbumReviewDto dto, @RequestParam List<Integer> selectedTagIds) {
-        CreateUserDTO sessionUser = (CreateUserDTO)session.getAttribute("loginUser");
-        dto.setUser_id(sessionUser.getId());
+    public ResponseEntity<Void> registAlbumReview(HttpSession session,@RequestParam("id")int id,@RequestBody AlbumReviewDto dto, @RequestParam List<Integer> selectedTagId) {
+        User sessionUser = (User)session.getAttribute("loginUser");
+        dto.setUser_id(sessionUser.getId().intValue());        
         dto.setAlbum_id(id);
 
         albumService.registAlbumReview(dto);
 
-        selectedTagIds.forEach(tagId -> {
-            System.out.println("Selected Tag ID: " + tagId);
+        selectedTagId.forEach(tagId -> {
             AlbumReviewTagDto albumReviewTagDto = new AlbumReviewTagDto();
             albumReviewTagDto.setTag_id(tagId);
             int reviewId = dto.getId();
