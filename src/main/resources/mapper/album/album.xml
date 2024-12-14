@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.tunemate.be.domain.album.domain.album.AlbumMapper">
+    <resultMap id="AlbumResultMap" type="com.tunemate.be.domain.album.domain.album.Album">
+        <id property="id" column="album_id"/>
+        <result property="title" column="album_title"/>
+        <result property="coverImg" column="album_cover_img"/>
+        <result property="year" column="album_year"/>
+        <result property="createdAt" column="album_created_at"/>
+        <result property="updatedAt" column="album_updated_at"/>
+        <association property="artist" javaType="com.tunemate.be.domain.artist.domain.artist.Artist">
+            <id property="id" column="artist_id"/>
+            <result property="name" column="artist_name"/>
+            <result property="img" column="artist_img"/>
+            <result property="bornYear" column="artist_born_year"/>
+            <result property="createdAt" column="artist_created_at"/>
+            <result property="updatedAt" column="artist_updated_at"/>
+        </association>
+    </resultMap>
+
+    <select id="findById" resultMap="AlbumResultMap">
+        SELECT album.id          AS album_id,
+               album.title       AS album_title,
+               album.cover_img   AS album_cover_img,
+               album.year        AS album_year,
+               album.created_at  AS album_created_at,
+               album.updated_at  AS album_updated_at,
+               artist.id         AS artist_id,
+               artist.name       AS artist_name,
+               artist.img        AS artist_img,
+               artist.born_year  AS artist_born_year,
+               artist.created_at AS artist_created_at,
+               artist.updated_at AS artist_updated_at
+        FROM album
+                 JOIN artist ON artist.id = album.artist
+        WHERE album.id = #{id}
+    </select>
+    <insert id="create" parameterType="com.tunemate.be.domain.album.domain.album.Album" useGeneratedKeys="true"
+            keyProperty="id">
+        INSERT INTO album (title, cover_img, artist, year)
+        VALUES (#{title}, #{coverImg}, #{artist.id}, #{year})
+    </insert>
+</mapper>
+
