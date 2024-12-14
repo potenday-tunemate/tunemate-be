@@ -20,6 +20,10 @@
 
 
     <insert id="registAlbumReviewProcess" >
+
+        <selectKey resultType="int" keyProperty="id" order="AFTER">
+            select max(id) from album_review
+        </selectKey>
         INSERT INTO album_review (
             user_id,
             album_id,
@@ -35,4 +39,18 @@
     <select id="albumInfo" resultType="com.tunemate.be.domain.album.domain.album.AlbumDto">
         select * from album where id=#{id}
     </select>
+    <select id="reviewTagList" resultType="com.tunemate.be.domain.album.domain.album.ReviewTagDto">
+        select * from review_tag
+    </select>
+
+    <insert id="registAlbumReviewTagProcess" >
+        INSERT INTO review_x_tag (
+            tag_id,
+            review_id   
+        ) 
+        VALUES (
+            #{tag_id},
+            #{review_id}
+        )
+    </insert>
 </mapper>

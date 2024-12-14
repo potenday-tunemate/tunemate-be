@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.tunemate.be.domain.album.domain.album.AlbumDto;
 import com.tunemate.be.domain.album.domain.album.AlbumReviewDto;
+import com.tunemate.be.domain.album.domain.album.*;
+
 import com.tunemate.be.domain.album.domain.album.AlbumSqlMapper;
 
 @Service
@@ -27,4 +29,13 @@ public class AlbumService {
     public AlbumDto albumDetailInfo(int id){
         return albumSqlMapper.albumInfo(id);
     }
+
+    public List<ReviewTagDto> reviewTagList(){
+        return albumSqlMapper.reviewTagList();
+    }
+
+    public void registAlbumReviewTag(AlbumReviewTagDto albumReviewTagDto){
+        albumSqlMapper.registAlbumReviewTagProcess(albumReviewTagDto);
+    }
+    
 }

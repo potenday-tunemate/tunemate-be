@@ -12,4 +12,8 @@ public interface AlbumSqlMapper {
     public void registAlbumReviewProcess(AlbumReviewDto dto);
 
     public AlbumDto albumInfo(@Param("id")int id);
+
+    public List<ReviewTagDto> reviewTagList();
+
+    public void registAlbumReviewTagProcess(AlbumReviewTagDto albumReviewTagDto);
 }
