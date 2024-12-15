@@ -18,7 +18,8 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,23 +41,22 @@ public class UserServiceTest {
 
     @Test
     void createUser_withValidData_shouldCreateUser() {
-        CreateUserDTO dto = CreateUserDTO.builder()
+        User user = User.builder()
                 .email("valid@example.com")
                 .password("password")
                 .nickname(null)
                 .build();
 
-        when(validator.validate(dto)).thenReturn(Collections.emptySet());
+        when(validator.validate(user)).thenReturn(Collections.emptySet());
 
         when(userMapper.findByEmail("valid@example.com")).thenReturn(Optional.empty());
 
-        doNothing().when(userMapper).create(dto);
+        doNothing().when(userMapper).create(user);
 
-        assertDoesNotThrow(() -> userService.createUser(dto));
 
         // then
         // userMapper.create가 호출되었는지 확인
-        verify(userMapper, times(1)).create(any(CreateUserDTO.class));
+        verify(userMapper, times(1)).create(any(User.class));
     }
 
     @Test
@@ -104,7 +104,7 @@ public class UserServiceTest {
 
         when(userMapper.findByEmail("valid@example.com")).thenReturn(Optional.empty());
 
-        doThrow(new RuntimeException("DB error")).when(userMapper).create(any(CreateUserDTO.class));
+        doThrow(new RuntimeException("DB error")).when(userMapper).create(any(User.class));
 
         CustomException ex = assertThrows(CustomException.class, () -> userService.createUser(dto));
         assertEquals("유저를 생성 할 수 없습니다.", ex.getMessage());

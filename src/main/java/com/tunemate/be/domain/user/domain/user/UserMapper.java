@@ -8,7 +8,9 @@ import java.util.Optional;
 public interface UserMapper {
     Optional<User> findByEmail(String email);
 
-    void create(CreateUserDTO dto);
+    Optional<User> findById(Long id);
+
+    void create(User user);
 
     CreateUserDTO loginUserRight(CreateUserDTO userDto);
 }

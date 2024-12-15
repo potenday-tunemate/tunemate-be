@@ -37,6 +37,10 @@ public class UserService {
         return findUserOrThrow(() -> userMapper.findByEmail(email));
     }
 
+    public User getUserById(Long id) {
+        return findUserOrThrow(() -> userMapper.findById(id));
+    }
+
     public void createUser(CreateUserDTO dto) {
         Set<ConstraintViolation<CreateUserDTO>> violations = validator.validate(dto);
         if (!violations.isEmpty()) {
@@ -53,9 +57,8 @@ public class UserService {
             throw new CustomException("유저 이메일이 이미 존재합니다.", HttpStatus.UNPROCESSABLE_ENTITY, 3002, "");
         }
         try {
-            dto.setPassword(BCrypt.hashpw(dto.getPassword(), BCrypt.gensalt(12)));
-            dto.setNickname(RandomNicknameGenerator.generateNickname());
-            userMapper.create(dto);
+            user = User.builder().email(dto.getEmail()).password(BCrypt.hashpw(dto.getPassword(), BCrypt.gensalt(12))).nickname(RandomNicknameGenerator.generateNickname()).build();
+            userMapper.create(user);
         } catch (Exception ex) {
             throw new CustomException("유저를 생성 할 수 없습니다.", HttpStatus.INTERNAL_SERVER_ERROR, 3003, "");
         }
