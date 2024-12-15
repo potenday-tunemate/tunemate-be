@@ -45,4 +45,9 @@
         INSERT INTO review (user, album, content)
         VALUES (#{user.id}, #{album.id}, #{content})
     </insert>
+
+    <insert id="registReviewTag" parameterType="com.tunemate.be.domain.album.domain.album.AlbumReviewTagDto">
+        INSERT INTO review_x_tag (tag_id,review_id)
+        VALUES (#{tag_id}, #{review_id})
+    </insert>
 </mapper>

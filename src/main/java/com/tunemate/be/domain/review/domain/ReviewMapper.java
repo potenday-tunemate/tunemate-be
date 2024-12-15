@@ -19,6 +19,8 @@ public interface ReviewMapper {
 
     void delete(Long id);
 
+    void registReviewTag(AlbumReviewTagDto albumReviewTagDto);
+
 
 
 }

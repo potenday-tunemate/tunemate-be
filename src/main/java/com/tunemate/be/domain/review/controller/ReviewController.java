@@ -17,6 +17,8 @@ import com.tunemate.be.domain.album.domain.album.AlbumDto;
 import com.tunemate.be.domain.album.domain.album.AlbumReviewTagDto;
 import com.tunemate.be.domain.album.domain.album.ReviewTagDto;
 import com.tunemate.be.domain.review.service.ReviewService;
+import com.tunemate.be.domain.tag.domain.Tag;
+import com.tunemate.be.domain.tag.service.TagService;
 import com.tunemate.be.domain.user.domain.user.CreateUserDTO;
 import com.tunemate.be.domain.user.domain.user.User;
 import com.tunemate.be.global.responses.OkResponse;
@@ -26,9 +28,12 @@ import jakarta.servlet.http.HttpSession;
 @RestController
 @RequestMapping("/review")
 public class ReviewController {
+    private final TagService tagService;
 
-    @Autowired
-    ReviewService reviewService;
+    public ReviewController(TagService tagService) {
+        this.tagService = tagService;
+    }
+    
 
     @GetMapping("")
     public ResponseEntity<OkResponse<Album>> getAlbumById() {
@@ -37,8 +42,8 @@ public class ReviewController {
 
     //리뷰태그
     @GetMapping("/tagList")
-    public ResponseEntity<List<ReviewTagDto>> reviewTagList() {
-        List<ReviewTagDto> tagList = reviewService.reviewTagList();
+    public ResponseEntity<List<Tag>> reviewTagList() {
+        List<Tag> tagList = tagService.getAllTags();
         return ResponseEntity.ok(tagList);
     }
 }

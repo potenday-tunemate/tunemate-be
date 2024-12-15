@@ -47,5 +47,9 @@ public class ReviewService {
 
     }
 
+    public void registAlbumReviewTag(AlbumReviewTagDto albumReviewTagDto) {
+        reviewMapper.registReviewTag(albumReviewTagDto);
+    }
+
     
 }
