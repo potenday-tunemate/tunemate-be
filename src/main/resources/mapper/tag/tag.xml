@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tunemate.be.domain.tag.domain.TagMapper">
+    <resultMap id="TagResultMap" type="com.tunemate.be.domain.tag.domain.Tag">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="findAllTags" resultMap="TagResultMap">
+        SELECT *
+        FROM tag
+    </select>
+    <insert id="create" parameterType="com.tunemate.be.domain.tag.domain.Tag" useGeneratedKeys="true"
+            keyProperty="id">
+        INSERT INTO tag (name)
+        VALUES (#{name})
+    </insert>
+</mapper>

@@ -8,21 +8,22 @@
         <result property="email" column="email"/>
         <result property="password" column="password"/>
         <result property="nickname" column="nickname"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
     </resultMap>
-    <select id="findByEmail" resultType="com.tunemate.be.domain.user.domain.user.User">
+    <select id="findByEmail" resultMap="UserResultMap">
         SELECT *
         FROM user
         WHERE email = #{email}
     </select>
-    <insert id="create" parameterType="com.tunemate.be.domain.user.domain.user.CreateUserDTO">
+    <select id="findById" resultMap="UserResultMap">
+        SELECT *
+        FROM user
+        WHERE id = #{id}
+    </select>
+    <insert id="create" parameterType="com.tunemate.be.domain.user.domain.user.CreateUserDTO" useGeneratedKeys="true"
+            keyProperty="id">
         INSERT INTO user (email, password, nickname)
         VALUES (#{email}, #{password}, #{nickname})
     </insert>
-
-    <select id="loginUserRight" resultType="com.tunemate.be.domain.user.domain.user.CreateUserDTO">
-        SELECT * FROM user
-        where 
-            email = #{email} 
-            and password = #{password}
-    </select>
 </mapper>
