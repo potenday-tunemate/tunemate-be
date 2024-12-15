@@ -1,6 +1,9 @@
 package com.tunemate.be.domain.review.service;
 
 import com.tunemate.be.domain.album.domain.album.Album;
+import com.tunemate.be.domain.album.domain.album.AlbumDto;
+import com.tunemate.be.domain.album.domain.album.AlbumReviewTagDto;
+import com.tunemate.be.domain.album.domain.album.ReviewTagDto;
 import com.tunemate.be.domain.album.service.AlbumService;
 import com.tunemate.be.domain.review.domain.CreateReviewDTO;
 import com.tunemate.be.domain.review.domain.PaginationDTO;
@@ -37,9 +40,12 @@ public class ReviewService {
             Album album = albumService.getAlbumById(dto.getAlbumID());
             Review review = Review.builder().user(user).album(album).content(dto.getContent()).build();
             reviewMapper.create(review);
+
         } catch (Exception e) {
             throw new CustomException("앨범 생성에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR, 8001, "");
         }
 
     }
+
+    
 }

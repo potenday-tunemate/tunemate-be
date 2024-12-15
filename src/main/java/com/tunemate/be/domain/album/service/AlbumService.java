@@ -1,11 +1,16 @@
 package com.tunemate.be.domain.album.service;
 
 import com.tunemate.be.domain.album.domain.album.Album;
+import com.tunemate.be.domain.album.domain.album.AlbumDto;
+import com.tunemate.be.domain.album.domain.album.AlbumGenreDto;
 import com.tunemate.be.domain.album.domain.album.AlbumMapper;
 import com.tunemate.be.domain.album.domain.album.CreateAlbumDTO;
 import com.tunemate.be.domain.artist.domain.artist.Artist;
 import com.tunemate.be.domain.artist.service.ArtistService;
 import com.tunemate.be.global.exceptions.CustomException;
+
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -35,4 +40,12 @@ public class AlbumService {
     public Album getAlbumById(Long albumId) {
         return albumMapper.findById(albumId).orElseThrow(() -> new CustomException("앨범을 찾지 못했습니다.", HttpStatus.NOT_FOUND, 5001, ""));
     }
+
+    public List<AlbumGenreDto> getAlbumGenreList(){
+        return albumMapper.albumGenreList();
+    }
+
+
+
+   
 }

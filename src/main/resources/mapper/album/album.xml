@@ -37,10 +37,18 @@
                  JOIN artist ON artist.id = album.artist
         WHERE album.id = #{id}
     </select>
+    
     <insert id="create" parameterType="com.tunemate.be.domain.album.domain.album.Album" useGeneratedKeys="true"
             keyProperty="id">
         INSERT INTO album (title, cover_img, artist, year)
         VALUES (#{title}, #{coverImg}, #{artist.id}, #{year})
     </insert>
-</mapper>
 
+    <select id="albumGenreList" resultType="com.tunemate.be.domain.album.domain.album.AlbumGenreDto">
+        select * from album_genre
+    </select>
+
+     <select id="albumInfo" resultType="com.tunemate.be.domain.album.domain.album.Album">
+        select * from album where id=#{id}
+    </select>
+</mapper>
