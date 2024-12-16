@@ -9,6 +9,8 @@ import com.tunemate.be.domain.user.domain.user.CreateUserDTO;
 import com.tunemate.be.domain.user.domain.user.User;
 import com.tunemate.be.global.responses.OkResponse;
 import com.tunemate.be.domain.review.domain.CreateReviewDTO;
+
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 import org.springframework.http.HttpStatus;
@@ -42,30 +44,26 @@ public class AlbumController {
     }
 
     @PostMapping("/{id}/review")
-    public ResponseEntity<Void> registAlbumReview(HttpSession session,@PathVariable("id") Long id,@RequestBody Review dto,@RequestBody Map<String, Object> requestBody) {
-        User sessionUser = (User) session.getAttribute("loginUser");
-        if (sessionUser == null) {
+    public ResponseEntity<Void> registAlbumReview(HttpServletRequest request,@RequestHeader("Authorization") String token,@PathVariable("id") Long id,@RequestBody Review dto,@RequestBody Map<String, Object> selectedTags) {
+        String authenticatedUserID = (String) request.getAttribute("authenticatedUserID");
+        if (authenticatedUserID == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     
+        // 리뷰 생성 DTO 준비
         CreateReviewDTO createReviewDTO = CreateReviewDTO.builder()
-                .userID(sessionUser.getId())
+                .userID(Long.valueOf(authenticatedUserID)) // 추출한 사용자 ID 사용
                 .albumID(id)
                 .content(dto.getContent())
                 .build();
     
-        // Service 호출
-        reviewService.createReview(createReviewDTO);
 
-        List<Integer> selectedTagIds = (List<Integer>) requestBody.get("selectedTagIds");
-        if (selectedTagIds != null && !selectedTagIds.isEmpty()) {
-            selectedTagIds.forEach(tagId -> {
-                AlbumReviewTagDto albumReviewTagDto = new AlbumReviewTagDto();
-                albumReviewTagDto.setTag_id(tagId);
-                albumReviewTagDto.setReview_id(dto.getId().intValue());
-                reviewService.registAlbumReviewTag(albumReviewTagDto);
-            });
-        }
+        reviewService.createReview(createReviewDTO);
+        reviewService.registAlbumReviewTag(dto.getId().intValue(), selectedTags);
+
+
+       
+    
 
         return ResponseEntity.ok().build();
     }

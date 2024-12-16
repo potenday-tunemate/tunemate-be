@@ -14,8 +14,10 @@ import com.tunemate.be.domain.user.service.UserService;
 import com.tunemate.be.global.exceptions.CustomException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ReviewService {
@@ -47,8 +49,19 @@ public class ReviewService {
 
     }
 
-    public void registAlbumReviewTag(AlbumReviewTagDto albumReviewTagDto) {
-        reviewMapper.registReviewTag(albumReviewTagDto);
+    public void registAlbumReviewTag(int reviewId,@RequestBody Map<String, Object> selectedTags ) {
+
+
+        List<Integer> selectedTagIds = (List<Integer>) selectedTags.get("selectedTagIds");
+        if (selectedTagIds != null && !selectedTagIds.isEmpty()) {
+            selectedTagIds.forEach(tagId -> {
+                AlbumReviewTagDto albumReviewTagDto = new AlbumReviewTagDto();
+                albumReviewTagDto.setTag_id(tagId);
+                albumReviewTagDto.setReview_id(reviewId);
+                reviewMapper.registReviewTag(albumReviewTagDto);
+            });
+        }
+        
     }
 
     
