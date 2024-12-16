@@ -1,7 +1,6 @@
 package com.tunemate.be.domain.album.service;
 
 import com.tunemate.be.domain.album.domain.album.Album;
-import com.tunemate.be.domain.album.domain.album.AlbumDto;
 import com.tunemate.be.domain.album.domain.album.AlbumGenreDto;
 import com.tunemate.be.domain.album.domain.album.AlbumMapper;
 import com.tunemate.be.domain.album.domain.album.CreateAlbumDTO;

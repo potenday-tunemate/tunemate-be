@@ -2,8 +2,7 @@ package com.tunemate.be.domain.review.domain;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.tunemate.be.domain.album.domain.album.AlbumReviewTagDto;
-import com.tunemate.be.domain.album.domain.album.ReviewTagDto;
+import com.tunemate.be.domain.album.domain.album.AlbumReviewTagDTO;
 
 import java.util.List;
 
@@ -19,8 +18,6 @@ public interface ReviewMapper {
 
     void delete(Long id);
 
-    void registReviewTag(AlbumReviewTagDto albumReviewTagDto);
-
-
+    void registReviewTag(AlbumReviewTagDTO albumReviewTagDto);
 
 }

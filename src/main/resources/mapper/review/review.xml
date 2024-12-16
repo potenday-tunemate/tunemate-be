@@ -39,9 +39,7 @@
     </select>
     <insert id="create" parameterType="com.tunemate.be.domain.review.domain.Review" useGeneratedKeys="true"
             keyProperty="id">
-        <selectKey resultType="int" keyProperty="id" order="AFTER">
-            select max(id) from album_review
-        </selectKey>
+   
         INSERT INTO review (user, album, content)
         VALUES (#{user.id}, #{album.id}, #{content})
     </insert>

@@ -1,24 +1,31 @@
 package com.tunemate.be.domain.album.service;
 
-
 import com.tunemate.be.domain.album.domain.album.Album;
 import com.tunemate.be.domain.album.domain.album.AlbumMapper;
+import com.tunemate.be.domain.album.domain.album.AlbumReviewTagDTO;
 import com.tunemate.be.domain.album.domain.album.CreateAlbumDTO;
 import com.tunemate.be.domain.artist.domain.artist.Artist;
 import com.tunemate.be.domain.artist.service.ArtistService;
+import com.tunemate.be.domain.review.domain.ReviewMapper;
+import com.tunemate.be.domain.review.service.ReviewService;
 import com.tunemate.be.global.exceptions.CustomException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 
 import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -171,7 +178,8 @@ public class AlbumServiceTest {
         }, "Expected createAlbum to throw CustomException");
 
         assertEquals("앨범 생성에 실패했습니다.", exception.getMessage(), "Exception message should match");
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatusCode(), "HTTP status should be INTERNAL_SERVER_ERROR");
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatusCode(),
+                "HTTP status should be INTERNAL_SERVER_ERROR");
         assertEquals(5002, exception.getErrorCode(), "Error code should match");
         verify(albumMapper, times(1)).create(any(Album.class));
     }
@@ -193,7 +201,8 @@ public class AlbumServiceTest {
                 .build();
 
         // Mocking ArtistService to throw CustomException
-        when(artistService.getArtistById(artistId)).thenThrow(new CustomException("아티스트를 찾지 못했습니다.", HttpStatus.NOT_FOUND, 6001, ""));
+        when(artistService.getArtistById(artistId))
+                .thenThrow(new CustomException("아티스트를 찾지 못했습니다.", HttpStatus.NOT_FOUND, 6001, ""));
 
         // When & Then
         CustomException exception = assertThrows(CustomException.class, () -> {
@@ -206,5 +215,37 @@ public class AlbumServiceTest {
 
         verify(artistService, times(1)).getArtistById(artistId);
         verify(albumMapper, never()).create(any(Album.class));
+    }
+
+    @Mock
+    private ReviewMapper reviewMapper;
+
+    @InjectMocks
+    private ReviewService reviewService;
+
+    @Test
+    void registAlbumReviewTag_ShouldRegisterTags_WhenSelectedTagsAreValid() {
+        // Given
+        int reviewId = 1;
+        List<Integer> selectedTags = List.of(100, 200, 300);
+        // When
+        reviewService.registAlbumReviewTag(reviewId, selectedTags);
+
+        // Then
+        ArgumentCaptor<AlbumReviewTagDTO> captor = ArgumentCaptor.forClass(AlbumReviewTagDTO.class);
+        verify(reviewMapper, times(3)).registReviewTag(captor.capture()); // 호출 횟수 검증 (태그 3개)
+
+        List<AlbumReviewTagDTO> capturedDtos = captor.getAllValues();
+        assertEquals(3, capturedDtos.size()); // DTO 개수 검증
+
+        // 태그 데이터 검증
+        assertEquals(100, capturedDtos.get(0).getTag_id());
+        assertEquals(reviewId, capturedDtos.get(0).getReview_id());
+
+        assertEquals(200, capturedDtos.get(1).getTag_id());
+        assertEquals(reviewId, capturedDtos.get(1).getReview_id());
+
+        assertEquals(300, capturedDtos.get(2).getTag_id());
+        assertEquals(reviewId, capturedDtos.get(2).getReview_id());
     }
 }

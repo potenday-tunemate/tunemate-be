@@ -5,11 +5,8 @@ import lombok.*;
 
 import java.sql.Timestamp;
 
+@Data
 @Builder
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class Album {
     private Long id;
     private String title;
