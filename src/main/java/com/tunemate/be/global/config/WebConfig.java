@@ -1,13 +1,17 @@
 package com.tunemate.be.global.config;
 
 
+import com.tunemate.be.global.jwt.AuthUserArgumentResolver;
 import com.tunemate.be.global.jwt.JwtAuthenticationFilter;
 import com.tunemate.be.global.jwt.JwtTokenProvider;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.List;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
@@ -18,6 +22,11 @@ public class WebConfig implements WebMvcConfigurer {
         registration.setFilter(new JwtAuthenticationFilter(jwtTokenProvider));
         registration.addUrlPatterns("/*");
         return registration;
+    }
+
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+        resolvers.add(new AuthUserArgumentResolver());
     }
 
     @Override
