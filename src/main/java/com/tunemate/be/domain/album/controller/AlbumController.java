@@ -3,6 +3,7 @@ package com.tunemate.be.domain.album.controller;
 import com.tunemate.be.domain.album.domain.album.Album;
 import com.tunemate.be.domain.album.service.AlbumService;
 import com.tunemate.be.domain.review.dto.request.CreateReviewDTO;
+import com.tunemate.be.domain.review.dto.response.AlbumVinylDTO;
 import com.tunemate.be.domain.review.dto.response.ReviewResponseDTO;
 import com.tunemate.be.domain.review.service.ReviewService;
 import com.tunemate.be.global.annotations.Auth;
@@ -42,6 +43,11 @@ public class AlbumController {
         Long parsedUserID = Long.parseLong(userID);
         reviewService.createReview(dto, parsedUserID, albumID);
         return ResponseEntity.ok(new OkResponse<>(true, null));
+    }
+
+    @GetMapping("/{id}/vinyl")
+    public ResponseEntity<OkResponse<List<AlbumVinylDTO>>> getAlbumVinyl(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(new OkResponse<>(true, albumService.getAlbumVinyl(id)));
     }
 
 }
