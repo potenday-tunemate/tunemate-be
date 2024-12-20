@@ -2,7 +2,7 @@ package com.tunemate.be.domain.album.service;
 
 import com.tunemate.be.domain.album.domain.album.Album;
 import com.tunemate.be.domain.album.domain.album.AlbumMapper;
-import com.tunemate.be.domain.album.domain.album.AlbumReviewTagDTO;
+import com.tunemate.be.domain.album.domain.album.AlbumReviewTagDto;
 import com.tunemate.be.domain.album.domain.album.CreateAlbumDTO;
 import com.tunemate.be.domain.artist.domain.artist.Artist;
 import com.tunemate.be.domain.artist.service.ArtistService;
@@ -14,14 +14,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 
 import java.sql.Timestamp;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -232,10 +229,10 @@ public class AlbumServiceTest {
         reviewService.registAlbumReviewTag(reviewId, selectedTags);
 
         // Then
-        ArgumentCaptor<AlbumReviewTagDTO> captor = ArgumentCaptor.forClass(AlbumReviewTagDTO.class);
+        ArgumentCaptor<AlbumReviewTagDto> captor = ArgumentCaptor.forClass(AlbumReviewTagDto.class);
         verify(reviewMapper, times(3)).registReviewTag(captor.capture()); // 호출 횟수 검증 (태그 3개)
 
-        List<AlbumReviewTagDTO> capturedDtos = captor.getAllValues();
+        List<AlbumReviewTagDto> capturedDtos = captor.getAllValues();
         assertEquals(3, capturedDtos.size()); // DTO 개수 검증
 
         // 태그 데이터 검증

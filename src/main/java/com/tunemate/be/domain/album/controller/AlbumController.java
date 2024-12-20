@@ -1,25 +1,16 @@
 package com.tunemate.be.domain.album.controller;
 
 import com.tunemate.be.domain.album.domain.album.Album;
-import com.tunemate.be.domain.album.domain.album.AlbumReviewRequest;
 import com.tunemate.be.domain.album.service.AlbumService;
+import com.tunemate.be.domain.review.domain.CreateReviewDTO;
 import com.tunemate.be.domain.review.domain.Review;
 import com.tunemate.be.domain.review.service.ReviewService;
-import com.tunemate.be.domain.user.domain.user.CreateUserDTO;
-import com.tunemate.be.domain.user.domain.user.User;
+import com.tunemate.be.global.annotations.UserID;
 import com.tunemate.be.global.responses.OkResponse;
-import com.tunemate.be.domain.review.domain.CreateReviewDTO;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
-
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/album")
@@ -39,24 +30,15 @@ public class AlbumController {
 
     @GetMapping("/{id}/review")
     public ResponseEntity<OkResponse<List<Review>>> getAlbumReviews(@PathVariable("id") Long id,
-            @RequestParam("limit") Integer limit, @RequestParam("offset") Integer offset) {
+                                                                    @RequestParam(value = "limit", defaultValue = "10") Integer limit, @RequestParam(value = "offset", defaultValue = "0") Integer offset) {
         return ResponseEntity.ok(new OkResponse<>(true, reviewService.findAlbumReview(id, limit, offset)));
     }
 
     @PostMapping("/{id}/review")
-    public ResponseEntity<Void> registAlbumReview(HttpServletRequest request, @PathVariable("id") Long id,
-            @RequestBody AlbumReviewRequest albumReviewRequest) {
-        String authenticatedUserID = (String) request.getAttribute("authenticatedUserID");
-        if (authenticatedUserID == null) {
-            authenticatedUserID = "123";
-        }
-
-
-        List<Integer> selectedTags = albumReviewRequest.getSelectedTags();
-
-        reviewService.createReview(albumReviewRequest.getCreateReviewDTO(), selectedTags);
-
-        return ResponseEntity.ok().build();
+    public ResponseEntity<OkResponse<Void>> registAlbumReview(@UserID String ID, @PathVariable("id") Long id,
+                                                              @RequestBody CreateReviewDTO dto) {
+        reviewService.createReview(dto);
+        return ResponseEntity.ok(new OkResponse<>(true, null));
     }
 
 }

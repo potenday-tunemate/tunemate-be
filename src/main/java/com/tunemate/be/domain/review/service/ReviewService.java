@@ -1,7 +1,7 @@
 package com.tunemate.be.domain.review.service;
 
 import com.tunemate.be.domain.album.domain.album.Album;
-import com.tunemate.be.domain.album.domain.album.AlbumReviewTagDTO;
+import com.tunemate.be.domain.album.domain.album.AlbumReviewTagDto;
 import com.tunemate.be.domain.album.service.AlbumService;
 import com.tunemate.be.domain.review.domain.CreateReviewDTO;
 import com.tunemate.be.domain.review.domain.PaginationDTO;
@@ -32,9 +32,8 @@ public class ReviewService {
         return reviewMapper.findAlbumReviewList(albumID, dto);
     }
 
-    public void createReview(CreateReviewDTO dto, List<Integer> selectedTags) {
+    public void createReview(CreateReviewDTO dto) {
         try {
-
             User user = userService.getUserById(dto.getUserID());
             Album album = albumService.getAlbumById(dto.getAlbumID());
             Review review = Review.builder().user(user).album(album).content(dto.getContent()).build();
@@ -43,10 +42,10 @@ public class ReviewService {
             int reviewId = review.getId().intValue();
             System.out.println("확인" + reviewId);
 
-            registAlbumReviewTag(reviewId, selectedTags);
+            registAlbumReviewTag(reviewId, dto.getSelectedTags());
 
         } catch (Exception e) {
-            throw new CustomException("앨범 생성에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR, 8001, "");
+            throw new CustomException("앨범 생성에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR, 8001, e.getMessage());
         }
 
     }
@@ -55,7 +54,7 @@ public class ReviewService {
 
         if (selectedTags != null && !selectedTags.isEmpty()) {
             selectedTags.forEach(tagId -> {
-                AlbumReviewTagDTO albumReviewTagDto = new AlbumReviewTagDTO();
+                AlbumReviewTagDto albumReviewTagDto = new AlbumReviewTagDto();
                 albumReviewTagDto.setTag_id(tagId);
                 albumReviewTagDto.setReview_id(reviewId);
                 reviewMapper.registReviewTag(albumReviewTagDto);

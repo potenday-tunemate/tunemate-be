@@ -1,11 +1,13 @@
 package com.tunemate.be.domain.album.domain.album;
 
-import java.util.List;
-import com.tunemate.be.domain.review.domain.CreateReviewDTO;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 public class AlbumReviewRequest {
-    private CreateReviewDTO createReviewDTO; 
-    private List<Integer> selectedTags; 
+    private Long userID;
+    private Long albumID;
+    private String content;
+    private List<Integer> selectedTags;
 }
