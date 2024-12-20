@@ -2,8 +2,8 @@ package com.tunemate.be.domain.auth.service;
 
 import com.tunemate.be.domain.auth.domain.auth.SigninDTO;
 import com.tunemate.be.domain.auth.domain.auth.SigninResponse;
-import com.tunemate.be.domain.user.domain.user.CreateUserDTO;
 import com.tunemate.be.domain.user.domain.user.User;
+import com.tunemate.be.domain.user.dto.CreateUserDTO;
 import com.tunemate.be.domain.user.service.UserService;
 import com.tunemate.be.global.exceptions.CustomException;
 import com.tunemate.be.global.jwt.JwtTokenProvider;

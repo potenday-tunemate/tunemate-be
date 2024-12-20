@@ -3,9 +3,7 @@ package com.tunemate.be.domain.auth.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tunemate.be.domain.auth.domain.auth.SigninDTO;
-import com.tunemate.be.domain.user.domain.user.CreateUserDTO;
-import com.tunemate.be.utils.StreamGobbler;
-import org.junit.jupiter.api.BeforeEach;
+import com.tunemate.be.domain.user.dto.CreateUserDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -21,9 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.MariaDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-
-import java.io.IOException;
-import java.util.Map;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -54,35 +49,6 @@ public class AuthControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @BeforeEach
-    void setUp() throws IOException, InterruptedException {
-        ProcessBuilder builder = new ProcessBuilder();
-        Map<String, String> env = builder.environment();
-        String mariadbUrl = String.format("%s:%s@tcp(%s:%d)/%s", mariaDBContainer.getUsername(), mariaDBContainer.getPassword(), mariaDBContainer.getHost(), mariaDBContainer.getMappedPort(3306), mariaDBContainer.getDatabaseName());
-        System.out.println(mariadbUrl);
-        env.put("GOOSE_MIGRATION_DIR", "./migrations");
-
-        builder.command("goose", "mysql", mariadbUrl, "up");
-
-        Process process = builder.start();
-
-
-        StreamGobbler outputGobbler = new StreamGobbler(process.getInputStream(), "OUTPUT");
-        StreamGobbler errorGobbler = new StreamGobbler(process.getErrorStream(), "ERROR");
-
-        outputGobbler.start();
-        errorGobbler.start();
-
-        int exitCode = process.waitFor();
-
-        outputGobbler.join();
-        errorGobbler.join();
-
-        if (exitCode != 0) {
-            throw new RuntimeException("Migration failed with exit code: " + exitCode);
-        }
-    }
 
     @Test
     void testSignUp() throws Exception {

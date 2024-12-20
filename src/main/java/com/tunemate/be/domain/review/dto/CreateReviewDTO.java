@@ -1,4 +1,4 @@
-package com.tunemate.be.domain.review.domain;
+package com.tunemate.be.domain.review.dto;
 
 import lombok.Builder;
 import lombok.Data;

@@ -1,9 +1,9 @@
 package com.tunemate.be.domain.tag.service;
 
 
-import com.tunemate.be.domain.tag.domain.CreateTagDTO;
 import com.tunemate.be.domain.tag.domain.Tag;
-import com.tunemate.be.domain.tag.domain.TagMapper;
+import com.tunemate.be.domain.tag.domain.repository.TagRepository;
+import com.tunemate.be.domain.tag.dto.CreateTagDTO;
 import com.tunemate.be.global.exceptions.CustomException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,7 +23,7 @@ import static org.mockito.Mockito.*;
 public class TagServiceTest {
 
     @Mock
-    private TagMapper tagMapper;
+    private TagRepository tagRepository;
 
     @InjectMocks
     private TagService tagService;
@@ -35,7 +35,7 @@ public class TagServiceTest {
                 Tag.builder().id(1L).name("Tag1").build(),
                 Tag.builder().id(2L).name("Tag2").build()
         );
-        when(tagMapper.findAllTags()).thenReturn(mockTags);
+        when(tagRepository.findAllTags()).thenReturn(mockTags);
 
         // Act
         List<Tag> result = tagService.getAllTags();
@@ -45,7 +45,7 @@ public class TagServiceTest {
         assertEquals(2, result.size(), "The size of the tag list should be 2");
         assertEquals("Tag1", result.get(0).getName(), "First tag name should be 'Tag1'");
         assertEquals("Tag2", result.get(1).getName(), "Second tag name should be 'Tag2'");
-        verify(tagMapper, times(1)).findAllTags();
+        verify(tagRepository, times(1)).findAllTags();
     }
 
     @Test
@@ -56,7 +56,7 @@ public class TagServiceTest {
         tagService.create(dto);
 
         ArgumentCaptor<Tag> tagCaptor = ArgumentCaptor.forClass(Tag.class);
-        verify(tagMapper, times(1)).create(tagCaptor.capture());
+        verify(tagRepository, times(1)).save(tagCaptor.capture());
         Tag capturedTag = tagCaptor.getValue();
         assertNotNull(capturedTag, "Captured tag should not be null");
         assertEquals("NewTag", capturedTag.getName(), "Tag name should be 'NewTag'");
@@ -67,7 +67,7 @@ public class TagServiceTest {
         // Arrange
         CreateTagDTO dto = new CreateTagDTO();
         dto.setName("FailTag");
-        doThrow(new RuntimeException("Database error")).when(tagMapper).create(any(Tag.class));
+        doThrow(new RuntimeException("Database error")).when(tagRepository).save(any(Tag.class));
 
         CustomException exception = assertThrows(CustomException.class, () -> {
             tagService.create(dto);
@@ -77,6 +77,6 @@ public class TagServiceTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatusCode(), "HTTP status should be 500");
         assertEquals(7001, exception.getErrorCode(), "Exception code should be 7001");
         assertEquals("", exception.getErrorMessage(), "Exception details should be empty");
-        verify(tagMapper, times(1)).create(any(Tag.class));
+        verify(tagRepository, times(1)).save(any(Tag.class));
     }
 }

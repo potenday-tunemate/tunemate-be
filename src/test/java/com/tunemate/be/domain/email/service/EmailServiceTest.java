@@ -14,6 +14,9 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.testcontainers.containers.MariaDBContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
@@ -24,6 +27,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
+@Testcontainers
 @ExtendWith(SpringExtension.class)
 public class EmailServiceTest {
 
@@ -38,6 +42,13 @@ public class EmailServiceTest {
     @Mock
     private MimeMessage mimeMessage;
 
+    @Container
+    static MariaDBContainer<?> mariaDBContainer = new MariaDBContainer<>("mariadb:10.7")
+            .withDatabaseName("testdb")
+            .withUsername("test")
+            .withPassword("test");
+
+
     @BeforeEach
     public void setUp() {
         emailService = new EmailService(emailSender, templateEngine);
@@ -45,6 +56,10 @@ public class EmailServiceTest {
 
     @DynamicPropertySource
     static void registerProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", mariaDBContainer::getJdbcUrl);
+        registry.add("spring.datasource.username", mariaDBContainer::getUsername);
+        registry.add("spring.datasource.password", mariaDBContainer::getPassword);
+        registry.add("spring.jpa.properties.hibernate.dialect", () -> "org.hibernate.dialect.MariaDBDialect");
         registry.add("jwt.secret", () -> "thisIsASecretKeyThatShouldBeAtLeast32BytesLongOkWhynotWork");
         registry.add("jwt.access_token.time", () -> 24);
         registry.add("jwt.refresh_token.time", () -> 48);

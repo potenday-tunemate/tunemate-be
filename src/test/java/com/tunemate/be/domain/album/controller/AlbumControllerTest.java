@@ -2,22 +2,19 @@ package com.tunemate.be.domain.album.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tunemate.be.domain.album.domain.album.Album;
-import com.tunemate.be.domain.album.domain.album.AlbumMapper;
-import com.tunemate.be.domain.album.domain.album.AlbumReviewRequest;
+import com.tunemate.be.domain.album.domain.album.dto.AlbumReviewRequest;
+import com.tunemate.be.domain.album.domain.album.repository.AlbumRepository;
 import com.tunemate.be.domain.artist.domain.artist.Artist;
-import com.tunemate.be.domain.artist.domain.artist.ArtistMapper;
-import com.tunemate.be.domain.review.domain.CreateReviewDTO;
+import com.tunemate.be.domain.artist.domain.artist.repository.ArtistRepository;
 import com.tunemate.be.domain.review.domain.Review;
-import com.tunemate.be.domain.review.domain.ReviewMapper;
+import com.tunemate.be.domain.review.domain.repository.ReviewRepository;
+import com.tunemate.be.domain.review.dto.CreateReviewDTO;
 import com.tunemate.be.domain.review.service.ReviewService;
 import com.tunemate.be.domain.user.domain.user.User;
-import com.tunemate.be.domain.user.domain.user.UserMapper;
-import com.tunemate.be.utils.StreamGobbler;
-import org.junit.jupiter.api.BeforeEach;
+import com.tunemate.be.domain.user.domain.user.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -32,12 +29,9 @@ import org.testcontainers.containers.MariaDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -51,16 +45,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(MockitoExtension.class)
 public class AlbumControllerTest {
     @Autowired
-    private AlbumMapper albumMapper;
+    private AlbumRepository albumRepository;
 
     @Autowired
-    private ArtistMapper artistMapper;
+    private ArtistRepository artistRepository;
 
     @Autowired
-    private UserMapper userMapper;
+    private UserRepository userRepository;
 
     @Autowired
-    private ReviewMapper reviewMapper;
+    private ReviewRepository reviewRepository;
 
     @Mock
     private ReviewService reviewService;
@@ -88,43 +82,14 @@ public class AlbumControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @BeforeEach
-    void setUp() throws IOException, InterruptedException {
-        ProcessBuilder builder = new ProcessBuilder();
-        Map<String, String> env = builder.environment();
-        String mariadbUrl = String.format("%s:%s@tcp(%s:%d)/%s", mariaDBContainer.getUsername(), mariaDBContainer.getPassword(), mariaDBContainer.getHost(), mariaDBContainer.getMappedPort(3306), mariaDBContainer.getDatabaseName());
-        System.out.println(mariadbUrl);
-        env.put("GOOSE_MIGRATION_DIR", "./migrations");
-
-        builder.command("goose", "mysql", mariadbUrl, "up");
-
-        Process process = builder.start();
-
-
-        StreamGobbler outputGobbler = new StreamGobbler(process.getInputStream(), "OUTPUT");
-        StreamGobbler errorGobbler = new StreamGobbler(process.getErrorStream(), "ERROR");
-
-        outputGobbler.start();
-        errorGobbler.start();
-
-        int exitCode = process.waitFor();
-
-        outputGobbler.join();
-        errorGobbler.join();
-
-        if (exitCode != 0) {
-            throw new RuntimeException("Migration failed with exit code: " + exitCode);
-        }
-    }
-
     @Test
     void testGetAlbumById() throws Exception {
         Artist artist = Artist.builder().
                 name("Test Artist").
                 img("artist_img.png").bornYear(1990).build();
-        artistMapper.create(artist);
+        artistRepository.save(artist);
         Album album = Album.builder().title("Test Album").coverImg("cover_img.png").artist(artist).year(1990).build();
-        albumMapper.create(album);
+        albumRepository.save(album);
         Long albumId = album.getId(); // 생성된 앨범의 실제 ID를 가져옴
 
         // When & Then
@@ -163,18 +128,18 @@ public class AlbumControllerTest {
     @Test
     void testGetAlbumReviewList() throws Exception {
         User createdUser = User.builder().email("test@naver.com").password("test").nickname("test").build();
-        userMapper.create(createdUser);
+        userRepository.save(createdUser);
         Artist artist = Artist.builder().
                 name("Test Artist").
                 img("artist_img.png").bornYear(1990).build();
-        artistMapper.create(artist);
+        artistRepository.save(artist);
         Album album = Album.builder().title("Test Album").coverImg("cover_img.png").artist(artist).year(1990).build();
-        albumMapper.create(album);
+        albumRepository.save(album);
         Long albumId = album.getId(); // 생성된 앨범의 실제 ID를 가져옴
 
-        User user = userMapper.findByEmail(createdUser.getEmail()).orElse(null);
+        User user = userRepository.findByEmail(createdUser.getEmail()).orElse(null);
         Review review = Review.builder().user(user).album(album).content("test").build();
-        reviewMapper.create(review);
+        reviewRepository.save(review);
 
         System.out.println(albumId);
         // When & Then
@@ -190,13 +155,13 @@ public class AlbumControllerTest {
     @Test
     void registAlbumReview_ShouldReturnOk_WhenRequestIsValid() throws Exception {
         User createdUser = User.builder().email("test@naver.com").password("test").nickname("test").build();
-        userMapper.create(createdUser);
+        userRepository.save(createdUser);
         Artist artist = Artist.builder().
                 name("Test Artist").
                 img("artist_img.png").bornYear(1990).build();
-        artistMapper.create(artist);
+        artistRepository.save(artist);
         Album album = Album.builder().title("Test Album").coverImg("cover_img.png").artist(artist).year(1990).build();
-        albumMapper.create(album);
+        albumRepository.save(album);
 
         CreateReviewDTO dto = CreateReviewDTO.builder()
                 .userID(createdUser.getId())
@@ -211,8 +176,6 @@ public class AlbumControllerTest {
         albumReviewRequest.setAlbumID(dto.getAlbumID());
         albumReviewRequest.setContent(dto.getContent());
         albumReviewRequest.setSelectedTags(selectedTags);
-
-        Mockito.doNothing().when(reviewService).createReview(any(CreateReviewDTO.class));
 
         mockMvc.perform(post("/album/{id}/review", 1) // album ID 설정
                         .header("Authorization", "Bearer some-token")

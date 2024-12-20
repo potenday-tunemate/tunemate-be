@@ -1,4 +1,4 @@
-package com.tunemate.be.domain.user.domain.user;
+package com.tunemate.be.domain.user.dto;
 
 import jakarta.validation.constraints.Email;
 import lombok.*;

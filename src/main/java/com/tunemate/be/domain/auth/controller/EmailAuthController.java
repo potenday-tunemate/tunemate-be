@@ -1,7 +1,7 @@
 package com.tunemate.be.domain.auth.controller;
 
-import com.tunemate.be.domain.auth.domain.emailAuth.CreateEmailAuthDTO;
 import com.tunemate.be.domain.auth.domain.emailAuth.EmailAuth;
+import com.tunemate.be.domain.auth.domain.emailAuth.dto.CreateEmailAuthDTO;
 import com.tunemate.be.domain.auth.service.EmailAuthService;
 import com.tunemate.be.global.responses.OkResponse;
 import org.springframework.http.ResponseEntity;

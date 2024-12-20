@@ -1,4 +1,4 @@
-package com.tunemate.be.domain.tag.domain;
+package com.tunemate.be.domain.tag.dto;
 
 
 import lombok.*;

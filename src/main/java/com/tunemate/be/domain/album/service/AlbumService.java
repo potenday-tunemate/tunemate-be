@@ -1,8 +1,8 @@
 package com.tunemate.be.domain.album.service;
 
 import com.tunemate.be.domain.album.domain.album.Album;
-import com.tunemate.be.domain.album.domain.album.AlbumMapper;
-import com.tunemate.be.domain.album.domain.album.CreateAlbumDTO;
+import com.tunemate.be.domain.album.domain.album.dto.CreateAlbumDTO;
+import com.tunemate.be.domain.album.domain.album.repository.AlbumRepository;
 import com.tunemate.be.domain.artist.domain.artist.Artist;
 import com.tunemate.be.domain.artist.service.ArtistService;
 import com.tunemate.be.global.exceptions.CustomException;
@@ -11,11 +11,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AlbumService {
-    private final AlbumMapper albumMapper;
+    private final AlbumRepository albumRepository;
     private final ArtistService artistService;
 
-    public AlbumService(AlbumMapper albumMapper, ArtistService artistService) {
-        this.albumMapper = albumMapper;
+    public AlbumService(AlbumRepository albumRepository, ArtistService artistService) {
+        this.albumRepository = albumRepository;
         this.artistService = artistService;
     }
 
@@ -26,13 +26,13 @@ public class AlbumService {
                 coverImg(dto.getCoverImg()).
                 artist(artist).build();
         try {
-            albumMapper.create(album);
+            albumRepository.save(album);
         } catch (Exception e) {
             throw new CustomException("앨범 생성에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR, 5002, "");
         }
     }
 
     public Album getAlbumById(Long albumId) {
-        return albumMapper.findById(albumId).orElseThrow(() -> new CustomException("앨범을 찾지 못했습니다.", HttpStatus.NOT_FOUND, 5001, ""));
+        return albumRepository.findById(albumId).orElseThrow(() -> new CustomException("앨범을 찾지 못했습니다.", HttpStatus.NOT_FOUND, 5001, ""));
     }
 }

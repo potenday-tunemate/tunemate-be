@@ -1,9 +1,9 @@
 package com.tunemate.be.domain.auth.service;
 
-import com.tunemate.be.domain.auth.domain.emailAuth.CreateEmailAuthDTO;
 import com.tunemate.be.domain.auth.domain.emailAuth.EmailAuth;
-import com.tunemate.be.domain.auth.domain.emailAuth.EmailAuthMapper;
-import com.tunemate.be.domain.auth.domain.emailAuth.UpdateEmailAuthDTO;
+import com.tunemate.be.domain.auth.domain.emailAuth.dto.CreateEmailAuthDTO;
+import com.tunemate.be.domain.auth.domain.emailAuth.dto.UpdateEmailAuthDTO;
+import com.tunemate.be.domain.auth.domain.emailAuth.repository.EmailAuthRepository;
 import com.tunemate.be.domain.email.service.EmailService;
 import com.tunemate.be.global.exceptions.CustomException;
 import com.tunemate.be.global.utils.Utils;
@@ -20,11 +20,11 @@ import java.util.function.Supplier;
 @Transactional
 @Service
 public class EmailAuthService {
-    private final EmailAuthMapper emailAuthMapper;
+    private final EmailAuthRepository emailAuthRepository;
     private final EmailService emailService;
 
-    public EmailAuthService(EmailAuthMapper emailAuthMapper, EmailService emailService) {
-        this.emailAuthMapper = emailAuthMapper;
+    public EmailAuthService(EmailAuthRepository emailAuthRepository, EmailService emailService) {
+        this.emailAuthRepository = emailAuthRepository;
         this.emailService = emailService;
     }
 
@@ -34,20 +34,26 @@ public class EmailAuthService {
     }
 
     public EmailAuth getEmailAuthByToken(String token) {
-        return findEmailAuthOrThrow(() -> emailAuthMapper.findByToken(token));
+        return findEmailAuthOrThrow(() -> emailAuthRepository.findByToken(token));
     }
 
     public EmailAuth getEmailAuthByEmail(String email) {
-        return findEmailAuthOrThrow(() -> emailAuthMapper.findByEmail(email));
+        return findEmailAuthOrThrow(() -> emailAuthRepository.findByEmail(email));
     }
 
     public EmailAuth getEmailAuthById(Long id) {
-        return findEmailAuthOrThrow(() -> emailAuthMapper.findById(id));
+        return findEmailAuthOrThrow(() -> emailAuthRepository.findById(id));
     }
 
     public void updateEmailAuth(UpdateEmailAuthDTO dto) {
         EmailAuth emailAuth = getEmailAuthById(dto.getId());
-        emailAuthMapper.update(dto);
+        if (dto.getToken() != null) {
+            emailAuth.setToken(dto.getToken());
+        }
+        if (dto.getExpiredAt() != null) {
+            emailAuth.setExpiredAt(Timestamp.from(dto.getExpiredAt()));
+        }
+        emailAuthRepository.save(emailAuth);
     }
 
     public void createOrUpdateEmailAuth(CreateEmailAuthDTO dto) {
@@ -58,24 +64,22 @@ public class EmailAuthService {
 
         try {
             emailAuth = getEmailAuthByEmail(dto.getEmail());
-
             UpdateEmailAuthDTO updateEmailAuthDTO = UpdateEmailAuthDTO.builder()
                     .id(emailAuth.getId())
                     .token(newToken)
                     .expiredAt(expiredAt)
                     .build();
-            emailAuthMapper.update(updateEmailAuthDTO);
-
+            updateEmailAuth(updateEmailAuthDTO);
         } catch (CustomException error) {
             if (error.getErrorCode() == 2002) {
                 emailAuth = EmailAuth.builder()
                         .email(dto.getEmail())
                         .token(newToken)
-                        .expired_at(Timestamp.from(expiredAt))
+                        .expiredAt(Timestamp.from(expiredAt))
                         .build();
 
                 try {
-                    emailAuthMapper.create(emailAuth);
+                    emailAuthRepository.save(emailAuth);
 
                     Context context = new Context();
                     context.setVariable("code", newToken);
@@ -97,9 +101,9 @@ public class EmailAuthService {
     }
 
     public EmailAuth verifyEmailAuth(String token) {
-        EmailAuth emailAuth = emailAuthMapper.findByToken(token)
+        EmailAuth emailAuth = emailAuthRepository.findByToken(token)
                 .orElseThrow(() -> new CustomException("이메일 인증을 찾을 수 없습니다.", HttpStatus.NOT_FOUND, 2002, ""));
-        if (emailAuth.getExpired_at().before(Timestamp.from(Instant.now()))) {
+        if (emailAuth.getExpiredAt().before(Timestamp.from(Instant.now()))) {
             throw new CustomException("이메일 인증이 만료되었습니다.", HttpStatus.UNPROCESSABLE_ENTITY, 2008, "");
         }
         return emailAuth;

@@ -1,9 +1,9 @@
 package com.tunemate.be.domain.user.service;
 
 
-import com.tunemate.be.domain.user.domain.user.CreateUserDTO;
 import com.tunemate.be.domain.user.domain.user.User;
-import com.tunemate.be.domain.user.domain.user.UserMapper;
+import com.tunemate.be.domain.user.domain.user.repository.UserRepository;
+import com.tunemate.be.domain.user.dto.CreateUserDTO;
 import com.tunemate.be.global.exceptions.CustomException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
@@ -26,7 +26,7 @@ import static org.mockito.Mockito.*;
 public class UserServiceTest {
 
     @Mock
-    private UserMapper userMapper;
+    private UserRepository userRepository;
 
     @Mock
     private Validator validator;
@@ -39,24 +39,26 @@ public class UserServiceTest {
         userService.setValidator(validator);
     }
 
+
     @Test
     void createUser_withValidData_shouldCreateUser() {
-        User user = User.builder()
-                .email("valid@example.com")
+        // given
+        CreateUserDTO dto = CreateUserDTO.builder()
+                .email("valid@example.com") // repository findByEmail과 일치하도록 수정
                 .password("password")
-                .nickname(null)
                 .build();
 
-        when(validator.validate(user)).thenReturn(Collections.emptySet());
+        // validator가 dto를 검증하므로 dto 타입에 맞춰 스터빙
+        when(validator.validate(any(CreateUserDTO.class))).thenReturn(Collections.emptySet());
 
-        when(userMapper.findByEmail("valid@example.com")).thenReturn(Optional.empty());
+        // UserRepository에서 findByEmail 호출 시 Optional.empty() 반환
+        when(userRepository.findByEmail("valid@example.com")).thenReturn(Optional.empty());
 
-        doNothing().when(userMapper).create(user);
-
+        // when
+        userService.createUser(dto);
 
         // then
-        // userMapper.create가 호출되었는지 확인
-        verify(userMapper, times(1)).create(any(User.class));
+        verify(userRepository, times(1)).save(any(User.class));
     }
 
     @Test
@@ -86,7 +88,7 @@ public class UserServiceTest {
         when(validator.validate(dto)).thenReturn(Collections.emptySet());
 
         User existingUser = new User(); // 가상의 User 객체
-        when(userMapper.findByEmail("exists@example.com")).thenReturn(Optional.of(existingUser));
+        when(userRepository.findByEmail("exists@example.com")).thenReturn(Optional.of(existingUser));
 
         CustomException ex = assertThrows(CustomException.class, () -> userService.createUser(dto));
         assertEquals("유저 이메일이 이미 존재합니다.", ex.getMessage());
@@ -102,9 +104,9 @@ public class UserServiceTest {
 
         when(validator.validate(dto)).thenReturn(Collections.emptySet());
 
-        when(userMapper.findByEmail("valid@example.com")).thenReturn(Optional.empty());
+        when(userRepository.findByEmail("valid@example.com")).thenReturn(Optional.empty());
 
-        doThrow(new RuntimeException("DB error")).when(userMapper).create(any(User.class));
+        doThrow(new RuntimeException("DB error")).when(userRepository).save(any(User.class));
 
         CustomException ex = assertThrows(CustomException.class, () -> userService.createUser(dto));
         assertEquals("유저를 생성 할 수 없습니다.", ex.getMessage());

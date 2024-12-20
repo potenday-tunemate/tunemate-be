@@ -4,7 +4,7 @@ package com.tunemate.be.domain.auth.controller;
 import com.tunemate.be.domain.auth.domain.auth.SigninDTO;
 import com.tunemate.be.domain.auth.domain.auth.SigninResponse;
 import com.tunemate.be.domain.auth.service.AuthService;
-import com.tunemate.be.domain.user.domain.user.CreateUserDTO;
+import com.tunemate.be.domain.user.dto.CreateUserDTO;
 import com.tunemate.be.global.responses.OkResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

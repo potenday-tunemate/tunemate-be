@@ -1,4 +1,4 @@
-package com.tunemate.be.domain.auth.domain.emailAuth;
+package com.tunemate.be.domain.auth.domain.emailAuth.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;

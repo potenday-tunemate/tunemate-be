@@ -1,8 +1,8 @@
 package com.tunemate.be.domain.user.service;
 
-import com.tunemate.be.domain.user.domain.user.CreateUserDTO;
 import com.tunemate.be.domain.user.domain.user.User;
-import com.tunemate.be.domain.user.domain.user.UserMapper;
+import com.tunemate.be.domain.user.domain.user.repository.UserRepository;
+import com.tunemate.be.domain.user.dto.CreateUserDTO;
 import com.tunemate.be.global.exceptions.CustomException;
 import com.tunemate.be.global.utils.RandomNicknameGenerator;
 import jakarta.validation.ConstraintViolation;
@@ -20,13 +20,13 @@ import java.util.function.Supplier;
 @Service
 @Setter
 public class UserService {
-    private final UserMapper userMapper;
+    private final UserRepository userRepository;
 
     @Autowired
     private Validator validator;
 
-    public UserService(UserMapper userMapper) {
-        this.userMapper = userMapper;
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     public User findUserOrThrow(Supplier<Optional<User>> supplier) {
@@ -34,11 +34,11 @@ public class UserService {
     }
 
     public User getUserByEmail(String email) {
-        return findUserOrThrow(() -> userMapper.findByEmail(email));
+        return findUserOrThrow(() -> userRepository.findByEmail(email));
     }
 
     public User getUserById(Long id) {
-        return findUserOrThrow(() -> userMapper.findById(id));
+        return findUserOrThrow(() -> userRepository.findById(id));
     }
 
     public void createUser(CreateUserDTO dto) {
@@ -58,13 +58,9 @@ public class UserService {
         }
         try {
             user = User.builder().email(dto.getEmail()).password(BCrypt.hashpw(dto.getPassword(), BCrypt.gensalt(12))).nickname(RandomNicknameGenerator.generateNickname()).build();
-            userMapper.create(user);
+            userRepository.save(user);
         } catch (Exception ex) {
             throw new CustomException("유저를 생성 할 수 없습니다.", HttpStatus.INTERNAL_SERVER_ERROR, 3003, "");
         }
-    }
-
-    public CreateUserDTO loginUserExist(CreateUserDTO userDto) {
-        return userMapper.loginUserRight(userDto);
     }
 }

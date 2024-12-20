@@ -2,7 +2,7 @@ package com.tunemate.be.domain.artist.service;
 
 
 import com.tunemate.be.domain.artist.domain.artist.Artist;
-import com.tunemate.be.domain.artist.domain.artist.ArtistMapper;
+import com.tunemate.be.domain.artist.domain.artist.repository.ArtistRepository;
 import com.tunemate.be.global.exceptions.CustomException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +21,7 @@ import static org.mockito.Mockito.*;
 public class ArtistServiceTest {
 
     @Mock
-    private ArtistMapper artistMapper;
+    private ArtistRepository artistRepository;
 
     @InjectMocks
     private ArtistService artistService;
@@ -38,7 +38,7 @@ public class ArtistServiceTest {
         mockArtist.setCreatedAt(new Timestamp(System.currentTimeMillis()));
         mockArtist.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
 
-        when(artistMapper.findById(artistId)).thenReturn(Optional.of(mockArtist));
+        when(artistRepository.findById(artistId)).thenReturn(Optional.of(mockArtist));
 
         // When
         Artist result = artistService.getArtistById(artistId);
@@ -49,7 +49,7 @@ public class ArtistServiceTest {
         assertEquals("Test Artist", result.getName(), "Artist name should match");
         assertEquals("artist_img.png", result.getImg(), "Artist image should match");
         assertEquals(1990, result.getBornYear(), "Artist born year should match");
-        verify(artistMapper, times(1)).findById(artistId);
+        verify(artistRepository, times(1)).findById(artistId);
     }
 
     @Test
@@ -57,7 +57,7 @@ public class ArtistServiceTest {
         // Given
         Long artistId = 2L;
 
-        when(artistMapper.findById(artistId)).thenReturn(Optional.empty());
+        when(artistRepository.findById(artistId)).thenReturn(Optional.empty());
 
         // When & Then
         CustomException exception = assertThrows(CustomException.class, () -> {
@@ -67,7 +67,7 @@ public class ArtistServiceTest {
         assertEquals("아티스트를 찾지 못했습니다.", exception.getMessage(), "Exception message should match");
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode(), "HTTP status should be NOT_FOUND");
         assertEquals(6001, exception.getErrorCode(), "Error code should match");
-        verify(artistMapper, times(1)).findById(artistId);
+        verify(artistRepository, times(1)).findById(artistId);
     }
 
     @Test
@@ -85,7 +85,7 @@ public class ArtistServiceTest {
         assertDoesNotThrow(() -> artistService.createArtist(artist), "createArtist should not throw an exception");
 
         // Verify that artistMapper.create was called once with the given artist
-        verify(artistMapper, times(1)).create(artist);
+        verify(artistRepository, times(1)).save(artist);
     }
 
     @Test
@@ -99,7 +99,7 @@ public class ArtistServiceTest {
                 .build();
 
         // Mocking artistMapper.create to throw an exception
-        doThrow(new RuntimeException("Database error")).when(artistMapper).create(any(Artist.class));
+        doThrow(new RuntimeException("Database error")).when(artistRepository).save(any(Artist.class));
 
         // When & Then
         CustomException exception = assertThrows(CustomException.class, () -> {
@@ -111,6 +111,6 @@ public class ArtistServiceTest {
         assertEquals(6002, exception.getErrorCode(), "Error code should match");
 
         // Verify that artistMapper.create was called once with the given artist
-        verify(artistMapper, times(1)).create(artist);
+        verify(artistRepository, times(1)).save(artist);
     }
 }

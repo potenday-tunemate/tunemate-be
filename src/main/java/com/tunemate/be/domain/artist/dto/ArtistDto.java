@@ -1,8 +1,8 @@
-package com.tunemate.be.domain.artist.domain.artist;
-
-import java.util.Date;
+package com.tunemate.be.domain.artist.dto;
 
 import lombok.Data;
+
+import java.util.Date;
 
 @Data
 public class ArtistDto {

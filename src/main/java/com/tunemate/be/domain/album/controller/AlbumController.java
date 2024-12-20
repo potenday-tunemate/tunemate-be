@@ -2,8 +2,8 @@ package com.tunemate.be.domain.album.controller;
 
 import com.tunemate.be.domain.album.domain.album.Album;
 import com.tunemate.be.domain.album.service.AlbumService;
-import com.tunemate.be.domain.review.domain.CreateReviewDTO;
 import com.tunemate.be.domain.review.domain.Review;
+import com.tunemate.be.domain.review.dto.CreateReviewDTO;
 import com.tunemate.be.domain.review.service.ReviewService;
 import com.tunemate.be.global.annotations.UserID;
 import com.tunemate.be.global.responses.OkResponse;
