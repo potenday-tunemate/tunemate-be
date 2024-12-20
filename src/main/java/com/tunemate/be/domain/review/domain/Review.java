@@ -1,5 +1,6 @@
 package com.tunemate.be.domain.review.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tunemate.be.domain.album.domain.album.Album;
 import com.tunemate.be.domain.tag.domain.Tag;
 import com.tunemate.be.domain.user.domain.user.User;
@@ -15,6 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Review {
 
     @Id

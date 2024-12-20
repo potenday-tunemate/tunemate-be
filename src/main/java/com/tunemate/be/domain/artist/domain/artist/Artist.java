@@ -1,5 +1,6 @@
 package com.tunemate.be.domain.artist.domain.artist;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,6 +12,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Artist {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
