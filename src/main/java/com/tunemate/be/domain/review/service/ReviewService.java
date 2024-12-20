@@ -94,7 +94,10 @@ public class ReviewService {
         try {
             User user = userService.getUserById(userID);
             Album album = albumService.getAlbumById(albumID);
-            List<Tag> tags = dto.getSelectedTags().stream().map((id) -> tagService.findById(Long.valueOf(id))).toList();
+            List<Tag> tags = new ArrayList<>();
+            if (dto.getSelectedTags() != null && !dto.getSelectedTags().isEmpty()) {
+                tags = dto.getSelectedTags().stream().map((id) -> tagService.findById(Long.valueOf(id))).toList();
+            }
             Review review = Review.builder().user(user).album(album).content(dto.getContent()).tag(tags).build();
             reviewRepository.save(review);
         } catch (CustomException e) {

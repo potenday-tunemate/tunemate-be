@@ -10,6 +10,8 @@ import com.tunemate.be.domain.review.domain.Review;
 import com.tunemate.be.domain.review.domain.repository.ReviewRepository;
 import com.tunemate.be.domain.review.dto.request.CreateReviewDTO;
 import com.tunemate.be.domain.review.service.ReviewService;
+import com.tunemate.be.domain.tag.dto.CreateTagDTO;
+import com.tunemate.be.domain.tag.service.TagService;
 import com.tunemate.be.domain.user.domain.user.User;
 import com.tunemate.be.domain.user.domain.user.repository.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -68,6 +70,8 @@ public class AlbumControllerTest {
             .withDatabaseName("testdb")
             .withUsername("test")
             .withPassword("test");
+    @Autowired
+    private TagService tagService;
 
     @DynamicPropertySource
     static void registerProperties(DynamicPropertyRegistry registry) {
@@ -167,7 +171,14 @@ public class AlbumControllerTest {
                 .content("This is a great album!")
                 .build();
 
-        List<Integer> selectedTags = Arrays.asList(1001, 1002, 1003);
+        CreateTagDTO tag1 = CreateTagDTO.builder().name("test1").build();
+        CreateTagDTO tag2 = CreateTagDTO.builder().name("test2").build();
+        CreateTagDTO tag3 = CreateTagDTO.builder().name("test3").build();
+        tagService.create(tag1);
+        tagService.create(tag2);
+        tagService.create(tag3);
+
+        List<Integer> selectedTags = Arrays.asList(1, 2, 3);
 
         AlbumReviewRequest albumReviewRequest = new AlbumReviewRequest();
         albumReviewRequest.setContent(dto.getContent());
