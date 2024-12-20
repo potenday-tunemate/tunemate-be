@@ -21,6 +21,10 @@ public class TagService {
         return tagRepository.findAllTags();
     }
 
+    public Tag findById(Long id) {
+        return tagRepository.findById(id).orElseThrow(() -> new CustomException("태그를 찾을 수 없습니다.", HttpStatus.NOT_FOUND, 10001, ""));
+    }
+
     public void create(CreateTagDTO dto) {
         Tag tag = Tag.builder().name(dto.getName()).build();
         try {

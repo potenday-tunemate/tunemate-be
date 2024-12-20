@@ -1,17 +1,17 @@
 package com.tunemate.be.domain.review.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
-@Data
-@Builder
-@AllArgsConstructor
+import java.util.List;
+
+
 @NoArgsConstructor
-public class ReviewResponseDTO {
-    private String nickname;
-    private String albumTitle;
-    private String albumCoverImg;
-    private String content;
+@SuperBuilder
+@Getter
+@Setter
+public class ReviewResponseDTO extends ReviewResponseRepositoryDTO {
+    private List<String> tags;
 }
