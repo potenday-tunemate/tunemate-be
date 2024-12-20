@@ -2,9 +2,10 @@ package com.tunemate.be.domain.album.controller;
 
 import com.tunemate.be.domain.album.domain.album.Album;
 import com.tunemate.be.domain.album.service.AlbumService;
-import com.tunemate.be.domain.review.domain.Review;
-import com.tunemate.be.domain.review.dto.CreateReviewDTO;
+import com.tunemate.be.domain.review.dto.request.CreateReviewDTO;
+import com.tunemate.be.domain.review.dto.response.ReviewResponseDTO;
 import com.tunemate.be.domain.review.service.ReviewService;
+import com.tunemate.be.global.annotations.Auth;
 import com.tunemate.be.global.annotations.UserID;
 import com.tunemate.be.global.responses.OkResponse;
 import org.springframework.http.ResponseEntity;
@@ -29,15 +30,17 @@ public class AlbumController {
     }
 
     @GetMapping("/{id}/review")
-    public ResponseEntity<OkResponse<List<Review>>> getAlbumReviews(@PathVariable("id") Long id,
-                                                                    @RequestParam(value = "limit", defaultValue = "10") Integer limit, @RequestParam(value = "offset", defaultValue = "0") Integer offset) {
+    public ResponseEntity<OkResponse<List<ReviewResponseDTO>>> getAlbumReviews(@PathVariable("id") Long id,
+                                                                               @RequestParam(value = "limit", defaultValue = "10") Integer limit, @RequestParam(value = "offset", defaultValue = "0") Integer offset) {
         return ResponseEntity.ok(new OkResponse<>(true, reviewService.findAlbumReview(id, limit, offset)));
     }
 
     @PostMapping("/{id}/review")
-    public ResponseEntity<OkResponse<Void>> registAlbumReview(@UserID String ID, @PathVariable("id") Long id,
+    @Auth
+    public ResponseEntity<OkResponse<Void>> registAlbumReview(@UserID String userID, @PathVariable("id") Long albumID,
                                                               @RequestBody CreateReviewDTO dto) {
-        reviewService.createReview(dto);
+        Long parsedUserID = Long.parseLong(userID);
+        reviewService.createReview(dto, parsedUserID, albumID);
         return ResponseEntity.ok(new OkResponse<>(true, null));
     }
 

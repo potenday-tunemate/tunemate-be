@@ -89,8 +89,8 @@ public class AuthControllerTest {
                         .content(asJsonString(signinDTO)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.ok").value(true))
-                .andExpect(jsonPath("$.data.accessToken").exists())
-                .andExpect(jsonPath("$.data.refreshToken").exists());
+                .andExpect(jsonPath("$.data.access_token").exists())
+                .andExpect(jsonPath("$.data.refresh_token").exists());
     }
 
     private static String asJsonString(Object obj) {
