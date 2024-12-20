@@ -1,4 +1,4 @@
-package com.tunemate.be.domain.review.dto;
+package com.tunemate.be.domain.review.dto.request;
 
 import lombok.*;
 

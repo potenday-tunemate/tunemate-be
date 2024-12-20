@@ -28,6 +28,6 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
             WebDataBinderFactory binderFactory
     ) {
         HttpServletRequest request = ((ServletWebRequest) webRequest).getRequest();
-        return request.getAttribute("authenticatedUser");
+        return request.getAttribute("authenticatedUserID");
     }
 }

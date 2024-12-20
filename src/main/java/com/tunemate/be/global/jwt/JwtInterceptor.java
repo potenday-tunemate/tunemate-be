@@ -25,7 +25,7 @@ public class JwtInterceptor implements HandlerInterceptor {
             }
 
             if (authAnnotation != null) {
-                String ID = (String) request.getAttribute("authenticatedUser");
+                String ID = (String) request.getAttribute("authenticatedUserID");
                 if (ID == null) {
                     throw new CustomException("인증되지 않았습니다.", HttpStatus.UNAUTHORIZED, 1002, "");
                 }

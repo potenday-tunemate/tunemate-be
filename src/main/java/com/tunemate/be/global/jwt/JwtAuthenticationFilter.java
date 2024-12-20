@@ -24,6 +24,7 @@ public class JwtAuthenticationFilter implements Filter {
             String token = header.substring(7);
             if (jwtTokenProvider.validateToken(token)) {
                 String ID = jwtTokenProvider.getID(token);
+                System.out.println(ID);
                 httpRequest.setAttribute("authenticatedUserID", ID);
             }
         }

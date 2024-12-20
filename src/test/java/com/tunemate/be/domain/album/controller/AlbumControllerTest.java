@@ -8,7 +8,7 @@ import com.tunemate.be.domain.artist.domain.artist.Artist;
 import com.tunemate.be.domain.artist.domain.artist.repository.ArtistRepository;
 import com.tunemate.be.domain.review.domain.Review;
 import com.tunemate.be.domain.review.domain.repository.ReviewRepository;
-import com.tunemate.be.domain.review.dto.CreateReviewDTO;
+import com.tunemate.be.domain.review.dto.request.CreateReviewDTO;
 import com.tunemate.be.domain.review.service.ReviewService;
 import com.tunemate.be.domain.user.domain.user.User;
 import com.tunemate.be.domain.user.domain.user.repository.UserRepository;
@@ -99,12 +99,12 @@ public class AlbumControllerTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.data.id").value(albumId))
                 .andExpect(jsonPath("$.data.title").value(album.getTitle()))
-                .andExpect(jsonPath("$.data.coverImg").value(album.getCoverImg()))
+                .andExpect(jsonPath("$.data.cover_img").value(album.getCoverImg()))
                 .andExpect(jsonPath("$.data.year").value(album.getYear()))
                 .andExpect(jsonPath("$.data.artist.id").value(artist.getId()))
                 .andExpect(jsonPath("$.data.artist.name").value(artist.getName()))
                 .andExpect(jsonPath("$.data.artist.img").value(artist.getImg()))
-                .andExpect(jsonPath("$.data.artist.bornYear").value(artist.getBornYear()));
+                .andExpect(jsonPath("$.data.artist.born_year").value(artist.getBornYear()));
         ;
 
     }
@@ -121,7 +121,7 @@ public class AlbumControllerTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 // 에러 응답의 특정 필드 검증
                 .andExpect(jsonPath("$.message").value("앨범을 찾지 못했습니다."))
-                .andExpect(jsonPath("$.errorCode").value(5001));
+                .andExpect(jsonPath("$.error_code").value(5001));
     }
 
 
@@ -164,24 +164,20 @@ public class AlbumControllerTest {
         albumRepository.save(album);
 
         CreateReviewDTO dto = CreateReviewDTO.builder()
-                .userID(createdUser.getId())
-                .albumID(album.getId())
                 .content("This is a great album!")
                 .build();
 
         List<Integer> selectedTags = Arrays.asList(1001, 1002, 1003);
 
         AlbumReviewRequest albumReviewRequest = new AlbumReviewRequest();
-        albumReviewRequest.setUserID(dto.getUserID());
-        albumReviewRequest.setAlbumID(dto.getAlbumID());
         albumReviewRequest.setContent(dto.getContent());
         albumReviewRequest.setSelectedTags(selectedTags);
 
-        mockMvc.perform(post("/album/{id}/review", 1) // album ID 설정
+        mockMvc.perform(post("/album/{id}/review", album.getId()) // album ID 설정
                         .header("Authorization", "Bearer some-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(albumReviewRequest)) // JSON 직렬화
-                        .requestAttr("authenticatedUserID", "10")) // 인증된 사용자 ID 설정
+                        .requestAttr("authenticatedUserID", createdUser.getId().toString())) // 인증된 사용자 ID 설정
                 .andExpect(status().isOk()); // 상태 코드 검증
     }
 
