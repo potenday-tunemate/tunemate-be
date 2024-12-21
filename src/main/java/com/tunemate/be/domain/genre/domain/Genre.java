@@ -1,10 +1,11 @@
-package com.tunemate.be.domain.artist.domain.artist;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+package com.tunemate.be.domain.genre.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 
 @Builder
 @Getter
@@ -12,24 +13,17 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@ToString
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Artist {
+public class Genre {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "name")
+    @Column(name = "genre", unique = true, nullable = false)
     private String name;
 
-    @Column(name = "img")
-    private String img;
-
-    @Column(name = "born_year")
-    private Integer bornYear;
-
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", updatable = false, nullable = false)
     private Timestamp createdAt;
 
     @Column(name = "updated_at")

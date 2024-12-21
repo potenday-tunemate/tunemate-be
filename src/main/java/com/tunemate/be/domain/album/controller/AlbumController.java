@@ -1,11 +1,15 @@
 package com.tunemate.be.domain.album.controller;
 
 import com.tunemate.be.domain.album.domain.album.Album;
+import com.tunemate.be.domain.album.domain.album.dto.CreateAlbumDTO;
 import com.tunemate.be.domain.album.service.AlbumService;
+import com.tunemate.be.domain.genre.domain.Genre;
+import com.tunemate.be.domain.genre.service.GenreService;
 import com.tunemate.be.domain.review.dto.request.CreateReviewDTO;
 import com.tunemate.be.domain.review.dto.response.AlbumVinylDTO;
 import com.tunemate.be.domain.review.dto.response.ReviewResponseDTO;
 import com.tunemate.be.domain.review.service.ReviewService;
+import com.tunemate.be.domain.tag.domain.Tag;
 import com.tunemate.be.global.annotations.Auth;
 import com.tunemate.be.global.annotations.UserID;
 import com.tunemate.be.global.responses.OkResponse;
@@ -19,10 +23,16 @@ import java.util.List;
 public class AlbumController {
     private final AlbumService albumService;
     private final ReviewService reviewService;
-
-    public AlbumController(AlbumService albumService, ReviewService reviewService) {
+    private final GenreService genreService;
+    public AlbumController(AlbumService albumService, ReviewService reviewService,GenreService genreService) {
         this.albumService = albumService;
         this.reviewService = reviewService;
+        this.genreService = genreService;
+    } 
+    @PostMapping("")
+    public ResponseEntity<OkResponse<Void>> registAlbum(@RequestBody CreateAlbumDTO dto) {
+        albumService.createReview(dto);
+        return ResponseEntity.ok(new OkResponse<>(true, null));
     }
 
     @GetMapping("/{id}")
@@ -50,4 +60,9 @@ public class AlbumController {
         return ResponseEntity.ok(new OkResponse<>(true, albumService.getAlbumVinyl(id)));
     }
 
+    @GetMapping("/genreList")
+    public ResponseEntity<List<Genre>> albumGenreList() {
+        List<Genre> genreList = genreService.getAllTags();
+        return ResponseEntity.ok(genreList);
+    }
 }

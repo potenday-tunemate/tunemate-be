@@ -2,7 +2,7 @@ package com.tunemate.be.domain.album.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tunemate.be.domain.album.domain.album.Album;
-import com.tunemate.be.domain.album.domain.album.dto.AlbumReviewRequest;
+import com.tunemate.be.domain.album.domain.album.dto.CreateAlbumDTO;
 import com.tunemate.be.domain.album.domain.album.repository.AlbumRepository;
 import com.tunemate.be.domain.artist.domain.artist.Artist;
 import com.tunemate.be.domain.artist.domain.artist.repository.ArtistRepository;
@@ -180,9 +180,9 @@ public class AlbumControllerTest {
 
         List<Integer> selectedTags = Arrays.asList(1, 2, 3);
 
-        AlbumReviewRequest albumReviewRequest = new AlbumReviewRequest();
+        CreateReviewDTO albumReviewRequest = new CreateReviewDTO();
         albumReviewRequest.setContent(dto.getContent());
-        albumReviewRequest.setSelectedTags(selectedTags);
+        albumReviewRequest.setSelected_tags(selectedTags);
 
         mockMvc.perform(post("/album/{id}/review", album.getId()) // album ID 설정
                         .header("Authorization", "Bearer some-token")

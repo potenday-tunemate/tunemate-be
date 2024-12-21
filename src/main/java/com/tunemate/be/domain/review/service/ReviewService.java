@@ -29,7 +29,8 @@ public class ReviewService {
     private final AlbumService albumService;
     private final TagService tagService;
 
-    public ReviewService(ReviewRepository reviewRepository, UserService userService, AlbumService albumService, TagService tagService) {
+    public ReviewService(ReviewRepository reviewRepository, UserService userService, AlbumService albumService,
+            TagService tagService) {
         this.reviewRepository = reviewRepository;
         this.userService = userService;
         this.albumService = albumService;
@@ -39,19 +40,16 @@ public class ReviewService {
     public List<ReviewResponseDTO> findAlbumReview(Long albumID, Integer limit, Integer offset) {
         Pageable pageable = PageRequest.of(offset, limit);
         List<ReviewResponseRepositoryDTO> dtos = reviewRepository.findAlbumReviewList(albumID, pageable);
-        List<List<String>> tagsList = dtos.stream().map((review) -> reviewRepository.findTagsByReviewId(review.getReviewId())).toList();
+        List<List<String>> tagsList = dtos.stream()
+                .map((review) -> reviewRepository.findTagsByReviewId(review.getReviewId())).toList();
         System.out.println(tagsList);
         List<ReviewResponseDTO> result = new ArrayList<>();
         for (int i = 0; i < dtos.size(); i++) {
             ReviewResponseRepositoryDTO repoDto = dtos.get(i);
             List<String> tags = tagsList.get(i);
-            ReviewResponseDTO responseDTO = ReviewResponseDTO.builder().
-                    albumTitle(repoDto.getAlbumTitle()).
-                    albumCoverImg(repoDto.getAlbumCoverImg()).
-                    reviewId(repoDto.getReviewId()).
-                    nickname(repoDto.getNickname()).
-                    content(repoDto.getContent()).
-                    tags(tags).build();
+            ReviewResponseDTO responseDTO = ReviewResponseDTO.builder().albumTitle(repoDto.getAlbumTitle())
+                    .albumCoverImg(repoDto.getAlbumCoverImg()).reviewId(repoDto.getReviewId())
+                    .nickname(repoDto.getNickname()).content(repoDto.getContent()).tags(tags).build();
             result.add(responseDTO);
         }
         return result;
@@ -63,7 +61,8 @@ public class ReviewService {
     }
 
     public void updateReview(Long userID, Long reviewID, UpdateReviewDTO dto) {
-        Review review = reviewRepository.findById(reviewID).orElseThrow(() -> new CustomException("앨범이 존재하지 않습니다.", HttpStatus.NOT_FOUND, 9001, ""));
+        Review review = reviewRepository.findById(reviewID)
+                .orElseThrow(() -> new CustomException("앨범이 존재하지 않습니다.", HttpStatus.NOT_FOUND, 9001, ""));
         if (!review.getUser().getId().equals(userID)) {
             throw new CustomException("타인의 리뷰를 업데이트 하려 시도하고 있습니다.", HttpStatus.UNAUTHORIZED, 9002, "");
         }
@@ -83,7 +82,8 @@ public class ReviewService {
     }
 
     public void deleteReview(Long userID, Long id) {
-        Review review = reviewRepository.findById(id).orElseThrow(() -> new CustomException("앨범이 존재하지 않습니다.", HttpStatus.NOT_FOUND, 9001, ""));
+        Review review = reviewRepository.findById(id)
+                .orElseThrow(() -> new CustomException("앨범이 존재하지 않습니다.", HttpStatus.NOT_FOUND, 9001, ""));
         if (!review.getUser().getId().equals(userID)) {
             throw new CustomException("타인의 리뷰를 삭제하려 시도하고 있습니다.", HttpStatus.UNAUTHORIZED, 9002, "");
         }
@@ -95,8 +95,8 @@ public class ReviewService {
             User user = userService.getUserById(userID);
             Album album = albumService.getAlbumById(albumID);
             List<Tag> tags = new ArrayList<>();
-            if (dto.getSelectedTags() != null && !dto.getSelectedTags().isEmpty()) {
-                tags = dto.getSelectedTags().stream().map((id) -> tagService.findById(Long.valueOf(id))).toList();
+            if (dto.getSelected_tags() != null && !dto.getSelected_tags().isEmpty()) {
+                tags = dto.getSelected_tags().stream().map((id) -> tagService.findById(Long.valueOf(id))).toList();
             }
             Review review = Review.builder().user(user).album(album).content(dto.getContent()).tag(tags).build();
             reviewRepository.save(review);

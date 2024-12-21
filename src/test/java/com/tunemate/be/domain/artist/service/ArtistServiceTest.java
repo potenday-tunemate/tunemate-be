@@ -1,7 +1,7 @@
 package com.tunemate.be.domain.artist.service;
 
-
 import com.tunemate.be.domain.artist.domain.artist.Artist;
+import com.tunemate.be.domain.artist.domain.artist.dto.CreateArtistDTO;
 import com.tunemate.be.domain.artist.domain.artist.repository.ArtistRepository;
 import com.tunemate.be.global.exceptions.CustomException;
 import org.junit.jupiter.api.Test;
@@ -15,6 +15,7 @@ import java.sql.Timestamp;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -73,44 +74,40 @@ public class ArtistServiceTest {
     @Test
     void testCreateArtist_Success() {
         // Given
-        Artist artist = Artist.builder()
-                .id(1L)
-                .name("Test Artist")
-                .img("artist_img.png")
-                .bornYear(1990)
-                .build();
-
+        CreateArtistDTO dto = new CreateArtistDTO();
+        dto.setName("Test Artist");
+        dto.setImg("artist_img.png");
+        dto.setBorn_year(1990);
 
         // Then
-        assertDoesNotThrow(() -> artistService.createArtist(artist), "createArtist should not throw an exception");
+        assertDoesNotThrow(() -> artistService.createArtist(dto), "createArtist should not throw an exception");
 
         // Verify that artistMapper.create was called once with the given artist
-        verify(artistRepository, times(1)).save(artist);
+        verify(artistRepository, times(1)).save(any(Artist.class));
     }
 
     @Test
     void testCreateArtist_Failure() {
         // Given
-        Artist artist = Artist.builder()
-                .id(2L)
-                .name("Another Artist")
-                .img("another_artist_img.png")
-                .bornYear(1985)
-                .build();
+        CreateArtistDTO dto = new CreateArtistDTO();
+        dto.setName("Test Artist");
+        dto.setImg("artist_img.png");
+        dto.setBorn_year(1990);
 
         // Mocking artistMapper.create to throw an exception
         doThrow(new RuntimeException("Database error")).when(artistRepository).save(any(Artist.class));
 
         // When & Then
         CustomException exception = assertThrows(CustomException.class, () -> {
-            artistService.createArtist(artist);
+            artistService.createArtist(dto);
         }, "Expected createArtist to throw CustomException");
 
         assertEquals("아티스트 생성에 실패했습니다.", exception.getMessage(), "Exception message should match");
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatusCode(), "HTTP status should be INTERNAL_SERVER_ERROR");
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatusCode(),
+                "HTTP status should be INTERNAL_SERVER_ERROR");
         assertEquals(6002, exception.getErrorCode(), "Error code should match");
 
         // Verify that artistMapper.create was called once with the given artist
-        verify(artistRepository, times(1)).save(artist);
+        verify(artistRepository, times(1)).save(any(Artist.class));
     }
 }

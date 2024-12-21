@@ -111,7 +111,7 @@ public class AlbumServiceTest {
                 .artist(artistId)
                 .title(title)
                 .year(year)
-                .coverImg(coverImg)
+                .cover_img(coverImg)
                 .build();
 
         // Mocking ArtistService to return the mock Artist
@@ -156,7 +156,7 @@ public class AlbumServiceTest {
                 .artist(artistId)
                 .title(title)
                 .year(year)
-                .coverImg(coverImg)
+                .cover_img(coverImg)
                 .build();
 
         // Mocking ArtistService to return the mock Artist
@@ -190,7 +190,7 @@ public class AlbumServiceTest {
                 .artist(artistId)
                 .title(title)
                 .year(year)
-                .coverImg(coverImg)
+                .cover_img(coverImg)
                 .build();
 
         // Mocking ArtistService to throw CustomException
