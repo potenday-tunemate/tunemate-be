@@ -17,7 +17,6 @@ import com.tunemate.be.global.responses.OkResponse;
 @RestController
 @RequestMapping("/artist")
 public class ArtistController {
-    private static final Logger logger = LoggerFactory.getLogger(ArtistController.class);
     private ArtistService artistService;
 
     public ArtistController(ArtistService artistService) {
@@ -26,8 +25,6 @@ public class ArtistController {
 
     @PostMapping("")
     public ResponseEntity<OkResponse<Void>> registArtist(@RequestBody CreateArtistDTO dto) {
-        System.out.println("확인artist !" + dto.getBorn_year());
-
         artistService.createArtist(dto);
         return ResponseEntity.ok(new OkResponse<>(true, null));
     }
