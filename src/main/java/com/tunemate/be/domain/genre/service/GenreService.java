@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.tunemate.be.domain.album.domain.album.Album;
 import com.tunemate.be.domain.album.domain.album.dto.AlbumGenreDto;
+import com.tunemate.be.domain.album.domain.album.dto.CreateAlbumDTO;
 import com.tunemate.be.domain.album.domain.album.repository.AlbumGenre;
 import com.tunemate.be.domain.album.domain.album.repository.AlbumGenreRepository;
 import com.tunemate.be.domain.genre.domain.Genre;
@@ -38,15 +39,24 @@ public class GenreService {
 
         if ("new".equalsIgnoreCase(sortType)) {
             List<Object[]> results = genreRepository.findAllGenresByNew(genreId);
-        
-        return results.stream().map(row -> {
-            Album album = (Album) row[0];
-            String artistName = (String) row[1];
-            Map<String, Object> map = new HashMap<>();
-            map.put("albumGenre", album);
-            map.put("artistName", artistName);
-            return map;
-        }).collect(Collectors.toList());
+            
+            return results.stream().map(row -> {
+                Album album = (Album) row[0];
+                String artistName = (String) row[1];
+                
+                // CreateAlbumDTO 생성 및 필드 매핑
+                CreateAlbumDTO dto = new CreateAlbumDTO();
+                dto.setTitle(album.getTitle());
+                dto.setCover_img(album.getCoverImg());
+                dto.setArtist(album.getArtist() != null ? album.getArtist().getId() : null); // Artist ID 매핑
+                dto.setYear(album.getYear());
+                
+                Map<String, Object> map = new HashMap<>();
+                map.put("album", dto); // CreateAlbumDTO 객체 전달
+                map.put("artistName", artistName); // 필요에 따라 artistName 전달
+                
+                return map;
+            }).collect(Collectors.toList());
         } 
         // 추후에 할꺼임
         // else if ("popular".equalsIgnoreCase(sortType)) {

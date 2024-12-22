@@ -52,8 +52,8 @@ public class AlbumService {
         if (dto.getSelected_genres() != null && !dto.getSelected_genres().isEmpty()) {
             for (Long genreId : dto.getSelected_genres()) {
                 AlbumGenre albumGenre = new AlbumGenre();
-                albumGenre.setAlbumId(album.getId()); // 앨범 ID 설정
-                albumGenre.setGenreId(genreId); // 장르 ID 설정
+                albumGenre.setAlbum(album); // 앨범 ID 설정
+                albumGenre.setGenre(genreService.findById(genreId));// 장르 ID 설정
                 albumGenreRepository.save(albumGenre);
             }
         }

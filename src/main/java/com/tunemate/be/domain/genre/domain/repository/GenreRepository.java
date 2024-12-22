@@ -15,10 +15,10 @@ public interface GenreRepository extends JpaRepository<Genre, Long> {
     List<Genre> findeAllGenres();
 
     @Query("SELECT a, ar.name FROM AlbumGenre ag " +
-    "JOIN Album a ON ag.albumId = a.id " +
-    "JOIN Artist ar ON a.artist.id = ar.id " +
-    "WHERE ag.genreId = :genreId " +
-    "ORDER BY ag.createdAt DESC")    
+    "JOIN ag.album a " +
+    "JOIN a.artist ar " +
+    "WHERE ag.genre.id = :genreId " +
+    "ORDER BY ag.createdAt DESC")   
     List<Object[]> findAllGenresByNew(@Param("genreId") Long genreId);
 
     // List<Genre> findAllGenresByPopular();

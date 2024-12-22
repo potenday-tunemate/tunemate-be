@@ -33,10 +33,9 @@ public class Album {
     @Column(name = "cover_img", nullable = false)
     private String coverImg;
 
-    @ManyToOne(fetch = FetchType.EAGER) // 즉시 로딩  ----이방법이 맞나....? 물어보기.....
-    // @ManyToOne(fetch = FetchType.LAZY)
-    // @JoinColumn(name = "artist_id")
-    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "artist_id")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
     private Artist artist;
 
     @Column(name = "year", nullable = false)

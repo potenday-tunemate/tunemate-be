@@ -17,11 +17,14 @@ public class AlbumGenre {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "album_id", nullable = false)
-    private Long albumId;
+    @ManyToOne
+    @JoinColumn(name = "album_id", referencedColumnName = "id", nullable = false)
+    private Album album;
 
-    @Column(name = "genre_id", nullable = false)
-    private Long genreId;
+    @ManyToOne
+    @JoinColumn(name = "genre_id", referencedColumnName = "id", nullable = false)
+    private Genre genre;
+
 
     @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private java.sql.Timestamp createdAt;
