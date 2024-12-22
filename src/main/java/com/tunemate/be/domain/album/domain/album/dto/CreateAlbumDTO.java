@@ -15,6 +15,6 @@ public class CreateAlbumDTO {
     private String cover_img;
     private Long artist;
     private Integer year;
-    private List<Integer> selected_genres;
+    private List<Long> selected_genres;
 
 }

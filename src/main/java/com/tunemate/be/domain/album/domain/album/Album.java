@@ -12,6 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -19,7 +20,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Album {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,17 +33,11 @@ public class Album {
     @Column(name = "cover_img", nullable = false)
     private String coverImg;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "artist_id")
+    @ManyToOne(fetch = FetchType.EAGER) // 즉시 로딩  ----이방법이 맞나....? 물어보기.....
+    // @ManyToOne(fetch = FetchType.LAZY)
+    // @JoinColumn(name = "artist_id")
+    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
     private Artist artist;
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "album_genre",
-            joinColumns = @JoinColumn(name = "album_id"),
-            inverseJoinColumns = @JoinColumn(name = "genre_id")
-    )
-    private List<Genre> genre;
 
     @Column(name = "year", nullable = false)
     private Integer year;

@@ -2,6 +2,8 @@ package com.tunemate.be.domain.album.service;
 
 import com.tunemate.be.domain.album.domain.album.Album;
 import com.tunemate.be.domain.album.domain.album.dto.CreateAlbumDTO;
+import com.tunemate.be.domain.album.domain.album.repository.AlbumGenre;
+import com.tunemate.be.domain.album.domain.album.repository.AlbumGenreRepository;
 import com.tunemate.be.domain.album.domain.album.repository.AlbumRepository;
 import com.tunemate.be.domain.artist.domain.artist.Artist;
 import com.tunemate.be.domain.artist.service.ArtistService;
@@ -25,28 +27,45 @@ public class AlbumService {
     private final ArtistService artistService;
     private final ReviewRepository reviewRepository;
     private final GenreService genreService;
-
+    private final AlbumGenreRepository albumGenreRepository;
     public AlbumService(AlbumRepository albumRepository, ArtistService artistService, 
-                        ReviewRepository reviewRepository,GenreService genreService) {
+                        ReviewRepository reviewRepository,GenreService genreService
+                        ,AlbumGenreRepository albumGenreRepository) {
         this.albumRepository = albumRepository;
         this.artistService = artistService;
         this.reviewRepository = reviewRepository;
         this.genreService = genreService;
+        this.albumGenreRepository = albumGenreRepository;
     }
 
     public void createAlbum(CreateAlbumDTO dto) {
-        Artist artist = artistService.getArtistById(dto.getArtist());
-        Album album = Album.builder().title(dto.getTitle()).
-                year(dto.getYear()).
-                coverImg(dto.getCover_img()).
-                artist(artist).build();
         try {
-            albumRepository.save(album);
+            Album album = new Album();
+        album.setTitle(dto.getTitle());
+        album.setCoverImg(dto.getCover_img());
+        album.setArtist(artistService.getArtistById(dto.getArtist()));
+        album.setYear(dto.getYear());
+
+        album = albumRepository.save(album);
+
+        // 2. 장르 매핑
+        if (dto.getSelected_genres() != null && !dto.getSelected_genres().isEmpty()) {
+            for (Long genreId : dto.getSelected_genres()) {
+                AlbumGenre albumGenre = new AlbumGenre();
+                albumGenre.setAlbumId(album.getId()); // 앨범 ID 설정
+                albumGenre.setGenreId(genreId); // 장르 ID 설정
+                albumGenreRepository.save(albumGenre);
+            }
+        }
+        albumRepository.save(album);
+        } catch (CustomException e) {
+            throw e;
         } catch (Exception e) {
-            throw new CustomException("앨범 생성에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR, 5002, "");
+            throw new CustomException("앨범 생성에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR, 8001, e.getMessage());
         }
     }
 
+    
     public List<AlbumVinylDTO> getAlbumVinyl(Long albumId) {
         getAlbumById(albumId);
         return reviewRepository.findAlbumVinylList(albumId);
@@ -56,24 +75,5 @@ public class AlbumService {
         return albumRepository.findById(albumId).orElseThrow(() -> new CustomException("앨범을 찾지 못했습니다.", HttpStatus.NOT_FOUND, 5001, ""));
     }
 
-    public void createReview(CreateAlbumDTO dto) {
-        try {
-            List<Genre> genres = new ArrayList<>();
-            if (dto.getSelected_genres() != null && !dto.getSelected_genres().isEmpty()) {
-                genres = dto.getSelected_genres().stream().map((id) -> genreService.findById(Long.valueOf(id))).toList();
-            }
-            Album album = Album.builder()
-            .title(dto.getTitle())
-            .coverImg(dto.getCover_img())
-            .artist(artistService.getArtistById(dto.getArtist()))
-            .year(dto.getYear())
-            .genre(genres)
-            .build();
-        albumRepository.save(album);
-        } catch (CustomException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new CustomException("앨범 생성에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR, 8001, e.getMessage());
-        }
-    }
+    
 }

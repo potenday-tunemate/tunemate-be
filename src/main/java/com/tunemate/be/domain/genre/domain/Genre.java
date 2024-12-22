@@ -21,7 +21,7 @@ public class Genre {
     private Long id;
 
     @Column(name = "genre", unique = true, nullable = false)
-    private String name;
+    private String genre;
 
     @Column(name = "created_at", updatable = false, nullable = false)
     private Timestamp createdAt;

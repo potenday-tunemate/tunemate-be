@@ -31,7 +31,7 @@ public class AlbumController {
     } 
     @PostMapping("")
     public ResponseEntity<OkResponse<Void>> registAlbum(@RequestBody CreateAlbumDTO dto) {
-        albumService.createReview(dto);
+        albumService.createAlbum(dto);
         return ResponseEntity.ok(new OkResponse<>(true, null));
     }
 
