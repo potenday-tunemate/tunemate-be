@@ -8,6 +8,8 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface AlbumRepository extends JpaRepository<Album, Long> {
-    @Query("SELECT album FROM Album album JOIN Artist artist ON album.artist = artist WHERE album.id = :id")
+    @Query("SELECT a FROM Album a " +
+            "JOIN FETCH a.artist ar " +
+            "WHERE a.id = :id")
     Optional<Album> findById(@Param("id") Long id);
 }

@@ -37,6 +37,23 @@ public class ReviewService {
         this.tagService = tagService;
     }
 
+    public void createReview(CreateReviewDTO dto, Long userID, Long albumID) {
+        try {
+            User user = userService.getUserById(userID);
+            Album album = albumService.getAlbumById(albumID);
+            List<Tag> tags = new ArrayList<>();
+            if (dto.getSelected_tags() != null && !dto.getSelected_tags().isEmpty()) {
+                tags = dto.getSelected_tags().stream().map((id) -> tagService.findById(Long.valueOf(id))).toList();
+            }
+            Review review = Review.builder().user(user).album(album).content(dto.getContent()).tag(tags).build();
+            reviewRepository.save(review);
+        } catch (CustomException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new CustomException("앨범 생성에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR, 8001, e.getMessage());
+        }
+    }
+
     public List<ReviewResponseDTO> findAlbumReview(Long albumID, Integer limit, Integer offset) {
         Pageable pageable = PageRequest.of(offset, limit);
         List<ReviewResponseRepositoryDTO> dtos = reviewRepository.findAlbumReviewList(albumID, pageable);
@@ -90,20 +107,5 @@ public class ReviewService {
         reviewRepository.deleteById(id);
     }
 
-    public void createReview(CreateReviewDTO dto, Long userID, Long albumID) {
-        try {
-            User user = userService.getUserById(userID);
-            Album album = albumService.getAlbumById(albumID);
-            List<Tag> tags = new ArrayList<>();
-            if (dto.getSelected_tags() != null && !dto.getSelected_tags().isEmpty()) {
-                tags = dto.getSelected_tags().stream().map((id) -> tagService.findById(Long.valueOf(id))).toList();
-            }
-            Review review = Review.builder().user(user).album(album).content(dto.getContent()).tag(tags).build();
-            reviewRepository.save(review);
-        } catch (CustomException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new CustomException("앨범 생성에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR, 8001, e.getMessage());
-        }
-    }
+    
 }
