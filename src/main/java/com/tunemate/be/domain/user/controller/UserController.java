@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tunemate.be.domain.album.domain.album.dto.CreateAlbumDTO;
+import com.tunemate.be.domain.review.dto.response.ReviewResponseDTO;
 import com.tunemate.be.domain.review.dto.response.ReviewResponseRepositoryDTO;
 import com.tunemate.be.domain.user.domain.user.User;
 import com.tunemate.be.domain.user.dto.response.ResponseUserDTO;
@@ -65,4 +66,12 @@ public class UserController {
         List<ResponseUserDTO> followerList = userService.getFollowerList(id);
         return ResponseEntity.ok(followerList);
     }
+
+    @GetMapping("/{userId}/review")
+    public ResponseEntity<List<ReviewResponseRepositoryDTO>> userWrtieReviewList(@PathVariable("userId")Long userId) {
+        List<ReviewResponseRepositoryDTO> userReviewList = userService.userWrtieReviewList(userId);
+        return ResponseEntity.ok(userReviewList);
+    }
+
+
 }

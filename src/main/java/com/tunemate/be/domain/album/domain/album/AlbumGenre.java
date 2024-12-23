@@ -1,6 +1,5 @@
-package com.tunemate.be.domain.album.domain.album.repository;
+package com.tunemate.be.domain.album.domain.album;
 
-import com.tunemate.be.domain.album.domain.album.Album;
 import com.tunemate.be.domain.genre.domain.Genre;
 
 import jakarta.persistence.*;

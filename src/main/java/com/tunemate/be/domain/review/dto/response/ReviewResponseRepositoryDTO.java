@@ -14,6 +14,7 @@ import lombok.experimental.SuperBuilder;
 public class ReviewResponseRepositoryDTO {
     private Long reviewId;
     private String nickname;
+    private String artistName;
     private String albumTitle;
     private String albumCoverImg;
     private String content;

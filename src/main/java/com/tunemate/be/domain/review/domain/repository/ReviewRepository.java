@@ -13,7 +13,7 @@ import java.util.Optional;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
-    @Query("SELECT new com.tunemate.be.domain.review.dto.response.ReviewResponseRepositoryDTO(review.id, user.nickname, album.title, album.coverImg, review.content) FROM Review review JOIN review.user user JOIN review.album album WHERE review.id = :id")
+    @Query("SELECT new com.tunemate.be.domain.review.dto.response.ReviewResponseRepositoryDTO(review.id, user.nickname, artist.name, album.title, album.coverImg, review.content) FROM Review review JOIN review.user user JOIN review.album album JOIN review.album.artist artist WHERE review.id = :id")
     List<ReviewResponseRepositoryDTO> findAlbumReviewList(@Param("id") Long id, Pageable pageable);
 
     @Query("SELECT tag.name FROM Review review JOIN review.tag tag WHERE review.id = :id")
@@ -23,7 +23,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     List<AlbumVinylDTO> findAlbumVinylList(@Param("id") Long id);
 
 
-    @Query("SELECT new com.tunemate.be.domain.review.dto.response.ReviewResponseRepositoryDTO(review.id, user.nickname, album.title, album.coverImg, review.content) FROM Review review JOIN review.user user JOIN review.album album ORDER BY review.createdAt DESC")
+    @Query("SELECT new com.tunemate.be.domain.review.dto.response.ReviewResponseRepositoryDTO(review.id, user.nickname, artist.name, album.title, album.coverImg, review.content) FROM Review review JOIN review.user user JOIN review.album album JOIN review.album.artist artist ORDER BY review.createdAt DESC")
     List<ReviewResponseRepositoryDTO> findReviewList(Pageable pageable);
 
     @Query("SELECT review FROM Review review WHERE review.id = :id")

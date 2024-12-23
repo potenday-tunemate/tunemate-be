@@ -9,10 +9,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.tunemate.be.domain.album.domain.album.Album;
+import com.tunemate.be.domain.album.domain.album.AlbumGenre;
 import com.tunemate.be.domain.album.domain.album.dto.AlbumGenreDto;
 import com.tunemate.be.domain.album.domain.album.dto.CreateAlbumDTO;
-import com.tunemate.be.domain.album.domain.album.repository.AlbumGenre;
-import com.tunemate.be.domain.album.domain.album.repository.AlbumGenreRepository;
 import com.tunemate.be.domain.genre.domain.Genre;
 import com.tunemate.be.domain.genre.domain.repository.GenreRepository;
 import com.tunemate.be.domain.tag.domain.Tag;

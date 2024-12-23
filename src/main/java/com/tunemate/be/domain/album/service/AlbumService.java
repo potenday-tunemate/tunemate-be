@@ -1,8 +1,8 @@
 package com.tunemate.be.domain.album.service;
 
 import com.tunemate.be.domain.album.domain.album.Album;
+import com.tunemate.be.domain.album.domain.album.AlbumGenre;
 import com.tunemate.be.domain.album.domain.album.dto.CreateAlbumDTO;
-import com.tunemate.be.domain.album.domain.album.repository.AlbumGenre;
 import com.tunemate.be.domain.album.domain.album.repository.AlbumGenreRepository;
 import com.tunemate.be.domain.album.domain.album.repository.AlbumRepository;
 import com.tunemate.be.domain.artist.domain.artist.Artist;
@@ -57,7 +57,6 @@ public class AlbumService {
                 albumGenreRepository.save(albumGenre);
             }
         }
-        albumRepository.save(album);
         } catch (CustomException e) {
             throw e;
         } catch (Exception e) {

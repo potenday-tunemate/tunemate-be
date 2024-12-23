@@ -50,7 +50,7 @@ public class ReviewService {
         } catch (CustomException e) {
             throw e;
         } catch (Exception e) {
-            throw new CustomException("앨범 생성에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR, 8001, e.getMessage());
+            throw new CustomException("리뷰 생성에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR, 8001, e.getMessage());
         }
     }
 
@@ -66,6 +66,7 @@ public class ReviewService {
             List<String> tags = tagsList.get(i);
             ReviewResponseDTO responseDTO = ReviewResponseDTO.builder().albumTitle(repoDto.getAlbumTitle())
                     .albumCoverImg(repoDto.getAlbumCoverImg()).reviewId(repoDto.getReviewId())
+                    .artistName(repoDto.getArtistName())
                     .nickname(repoDto.getNickname()).content(repoDto.getContent()).tags(tags).build();
             result.add(responseDTO);
         }
@@ -107,5 +108,4 @@ public class ReviewService {
         reviewRepository.deleteById(id);
     }
 
-    
 }
