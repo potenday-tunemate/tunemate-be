@@ -7,12 +7,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tunemate.be.domain.album.domain.album.Album;
 import com.tunemate.be.domain.album.domain.album.AlbumGenre;
 import com.tunemate.be.domain.genre.domain.Genre;
 import com.tunemate.be.domain.genre.service.GenreService;
+import com.tunemate.be.domain.review.dto.response.ReviewResponseRepositoryDTO;
+import com.tunemate.be.global.responses.OkResponse;
 
 @RestController
 @RequestMapping("/genre")
@@ -23,6 +26,11 @@ public class GenreController {
         this.genreService = genreService;
     }
 
+    @GetMapping("")
+    public ResponseEntity<OkResponse<List<Genre>>> getAlbumList() {
+        return ResponseEntity.ok(new OkResponse<>(true, genreService.getAllTags()));
+    }
+    
     @GetMapping("/{id}/{sortType}")
     public ResponseEntity<List<Map<String, Object>>> getGenres(
             @PathVariable Long id,
