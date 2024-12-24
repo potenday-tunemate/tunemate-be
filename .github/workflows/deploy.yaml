@@ -72,6 +72,8 @@ jobs:
           key: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
           port: ${{ secrets.REMOTE_SSH_PORT }}
           script: |
+            cd tunemate-be
+            git pull origin dev
             export DB_NAME="${{ secrets.DB_NAME }}"
             export DB_USERNAME="${{ secrets.DB_USERNAME }}"
             export DB_ROOT_PASSWORD="${{ secrets.DB_ROOT_PASSWORD }}"
