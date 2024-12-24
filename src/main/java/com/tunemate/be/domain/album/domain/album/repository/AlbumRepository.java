@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface AlbumRepository extends JpaRepository<Album, Long> {
     @Query("SELECT a FROM Album a " +
-            "JOIN  a.artist ar " +
+            "JOIN FETCH a.artist ar " +
             "WHERE a.id = :id")
     Optional<Album> findById(@Param("id") Long id);
 }
