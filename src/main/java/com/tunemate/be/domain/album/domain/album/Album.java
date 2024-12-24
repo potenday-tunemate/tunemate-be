@@ -41,6 +41,9 @@ public class Album {
     @Column(name = "year", nullable = false)
     private Integer year;
 
+    @OneToOne(mappedBy = "album", cascade = CascadeType.ALL)
+    private AlbumGenre albumGenre;
+    
     @Column(name = "created_at", nullable = false, updatable = false)
     private Timestamp createdAt;
 

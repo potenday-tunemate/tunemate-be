@@ -21,7 +21,7 @@ import com.tunemate.be.global.exceptions.CustomException;
 public class GenreService {
     private final GenreRepository genreRepository;
 
-    public GenreService(GenreRepository genreRepository){
+    public GenreService(GenreRepository genreRepository) {
         this.genreRepository = genreRepository;
     }
 
@@ -30,43 +30,63 @@ public class GenreService {
     }
 
     public Genre findById(Long id) {
-        return genreRepository.findById(id).orElseThrow(() -> new CustomException("장르를 찾을 수 없습니다.", HttpStatus.NOT_FOUND, 10001, ""));
+        return genreRepository.findById(id)
+                .orElseThrow(() -> new CustomException("장르를 찾을 수 없습니다.", HttpStatus.NOT_FOUND, 10001, ""));
     }
 
-    public List<Map<String, Object>> getGenresBySortType(Long genreId,String sortType) {
-        
+    public List<Map<String, Object>> getGenresBySortType(Long genreId, String sortType) {
 
         if ("new".equalsIgnoreCase(sortType)) {
-            List<Object[]> results = genreRepository.findAllGenresByNew(genreId);
-            
-            return results.stream().map(row -> {
+            List<Object[]> resultNew = genreRepository.findAllGenresByNew(genreId);
+
+            return resultNew.stream().map(row -> {
                 Album album = (Album) row[0];
                 String artistName = (String) row[1];
-                
+
                 // CreateAlbumDTO 생성 및 필드 매핑
                 CreateAlbumDTO dto = new CreateAlbumDTO();
                 dto.setTitle(album.getTitle());
                 dto.setCover_img(album.getCoverImg());
-                dto.setArtist(album.getArtist() != null ? album.getArtist().getId() : null); // Artist ID 매핑
+                dto.setArtist(album.getArtist() != null ? album.getArtist().getId() : null);
                 dto.setYear(album.getYear());
-                
+
                 Map<String, Object> map = new HashMap<>();
-                map.put("album", dto); // CreateAlbumDTO 객체 전달
-                map.put("artistName", artistName); // 필요에 따라 artistName 전달
-                
+                map.put("album", dto);
+                map.put("artistName", artistName);
+
                 return map;
             }).collect(Collectors.toList());
-        } 
+        }
         // 추후에 할꺼임
-        // else if ("popular".equalsIgnoreCase(sortType)) {
-        //     return genreRepository.findAllGenresByPopular();
-        // } 
-        else {
+        else if ("popular".equalsIgnoreCase(sortType)) {
+            List<Object[]> resultPopular = genreRepository.findAllGenresByPopular(genreId);
+            return resultPopular.stream().map(row -> {
+                Album album = (Album) row[0];
+                String artistName = (String) row[1];
+                Long reviewCount = (Long) row[2];
+                Long genreID = (Long) row[3];
+                String albumGenre = (String) row[4];
+
+               
+                // CreateAlbumDTO 생성 및 필드 매핑
+                CreateAlbumDTO dto = new CreateAlbumDTO();
+                dto.setTitle(album.getTitle());
+                dto.setCover_img(album.getCoverImg());
+                dto.setArtist(album.getArtist() != null ? album.getArtist().getId() : null);
+                dto.setYear(album.getYear());
+                dto.setGenre(genreID);
+
+                Map<String, Object> map = new HashMap<>();
+                map.put("album", dto);
+                map.put("artistName", artistName);
+                map.put("reviewCount", reviewCount);
+                map.put("albumGenre", albumGenre);
+
+                return map;
+            }).collect(Collectors.toList());
+        } else {
             throw new CustomException("앨범 정렬에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR, 7001, "");
         }
 
-
     }
 }
-
-

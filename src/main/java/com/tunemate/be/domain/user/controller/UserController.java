@@ -29,7 +29,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/{id}/profile")
+    @GetMapping("")
     @Auth
     public ResponseEntity<User> getUserProfile(@UserID String userId) {
         Long parsedUserID = Long.parseLong(userId);
@@ -67,8 +67,8 @@ public class UserController {
         return ResponseEntity.ok(followerList);
     }
 
-    @GetMapping("/{userId}/review")
-    public ResponseEntity<List<ReviewResponseRepositoryDTO>> userWrtieReviewList(@PathVariable("userId")Long userId) {
+    @GetMapping("/{id}/review")
+    public ResponseEntity<List<ReviewResponseRepositoryDTO>> userWrtieReviewList(@PathVariable("id")Long userId) {
         List<ReviewResponseRepositoryDTO> userReviewList = userService.userWrtieReviewList(userId);
         return ResponseEntity.ok(userReviewList);
     }

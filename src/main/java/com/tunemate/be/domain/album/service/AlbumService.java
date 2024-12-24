@@ -28,9 +28,9 @@ public class AlbumService {
     private final ReviewRepository reviewRepository;
     private final GenreService genreService;
     private final AlbumGenreRepository albumGenreRepository;
-    public AlbumService(AlbumRepository albumRepository, ArtistService artistService, 
-                        ReviewRepository reviewRepository,GenreService genreService
-                        ,AlbumGenreRepository albumGenreRepository) {
+
+    public AlbumService(AlbumRepository albumRepository, ArtistService artistService,
+            ReviewRepository reviewRepository, GenreService genreService, AlbumGenreRepository albumGenreRepository) {
         this.albumRepository = albumRepository;
         this.artistService = artistService;
         this.reviewRepository = reviewRepository;
@@ -41,22 +41,21 @@ public class AlbumService {
     public void createAlbum(CreateAlbumDTO dto) {
         try {
             Album album = new Album();
-        album.setTitle(dto.getTitle());
-        album.setCoverImg(dto.getCover_img());
-        album.setArtist(artistService.getArtistById(dto.getArtist()));
-        album.setYear(dto.getYear());
+            album.setTitle(dto.getTitle());
+            album.setCoverImg(dto.getCover_img());
+            album.setArtist(artistService.getArtistById(dto.getArtist()));
+            album.setYear(dto.getYear());
 
-        album = albumRepository.save(album);
+            album = albumRepository.save(album);
 
-        // 2. 장르 매핑
-        if (dto.getSelected_genres() != null && !dto.getSelected_genres().isEmpty()) {
-            for (Long genreId : dto.getSelected_genres()) {
+            // 2. 장르 매핑
+            if (dto.getGenre() != null) {
                 AlbumGenre albumGenre = new AlbumGenre();
                 albumGenre.setAlbum(album); // 앨범 ID 설정
-                albumGenre.setGenre(genreService.findById(genreId));// 장르 ID 설정
+                albumGenre.setGenre(genreService.findById(dto.getGenre()));// 장르 ID 설정
                 albumGenreRepository.save(albumGenre);
+
             }
-        }
         } catch (CustomException e) {
             throw e;
         } catch (Exception e) {
@@ -64,15 +63,14 @@ public class AlbumService {
         }
     }
 
-    
     public List<AlbumVinylDTO> getAlbumVinyl(Long albumId) {
         getAlbumById(albumId);
         return reviewRepository.findAlbumVinylList(albumId);
     }
 
     public Album getAlbumById(Long albumId) {
-        return albumRepository.findById(albumId).orElseThrow(() -> new CustomException("앨범을 찾지 못했습니다.", HttpStatus.NOT_FOUND, 5001, ""));
+        return albumRepository.findById(albumId)
+                .orElseThrow(() -> new CustomException("앨범을 찾지 못했습니다.", HttpStatus.NOT_FOUND, 5001, ""));
     }
 
-    
 }

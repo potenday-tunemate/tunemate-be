@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tunemate.be.domain.album.domain.album.Album;
-import com.tunemate.be.domain.album.domain.album.AlbumGenre;
 import com.tunemate.be.domain.genre.domain.Genre;
 import com.tunemate.be.domain.genre.service.GenreService;
 import com.tunemate.be.domain.review.dto.response.ReviewResponseRepositoryDTO;
