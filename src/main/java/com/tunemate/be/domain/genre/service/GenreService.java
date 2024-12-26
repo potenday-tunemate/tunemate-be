@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.tunemate.be.domain.album.domain.album.Album;
-import com.tunemate.be.domain.album.domain.album.AlbumGenre;
 import com.tunemate.be.domain.album.domain.album.dto.AlbumGenreDto;
 import com.tunemate.be.domain.album.domain.album.dto.CreateAlbumDTO;
 import com.tunemate.be.domain.genre.domain.Genre;
@@ -57,7 +56,6 @@ public class GenreService {
                 return map;
             }).collect(Collectors.toList());
         }
-        // 추후에 할꺼임
         else if ("popular".equalsIgnoreCase(sortType)) {
             List<Object[]> resultPopular = genreRepository.findAllGenresByPopular(genreId);
             return resultPopular.stream().map(row -> {

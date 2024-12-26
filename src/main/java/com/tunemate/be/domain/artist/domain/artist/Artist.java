@@ -1,6 +1,8 @@
 package com.tunemate.be.domain.artist.domain.artist;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,9 +32,11 @@ public class Artist {
     private Integer bornYear;
 
     @Column(name = "created_at", nullable = false, updatable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Timestamp createdAt;
 
     @Column(name = "updated_at")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Timestamp updatedAt;
 
     @PrePersist

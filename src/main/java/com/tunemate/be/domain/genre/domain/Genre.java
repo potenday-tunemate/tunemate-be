@@ -5,6 +5,7 @@ import lombok.*;
 import java.sql.Timestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 @Builder
@@ -24,9 +25,11 @@ public class Genre {
     private String genre;
 
     @Column(name = "created_at", updatable = false, nullable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Timestamp createdAt;
 
     @Column(name = "updated_at")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Timestamp updatedAt;
 
     @PrePersist

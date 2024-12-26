@@ -1,9 +1,7 @@
 package com.tunemate.be.domain.album.service;
 
 import com.tunemate.be.domain.album.domain.album.Album;
-import com.tunemate.be.domain.album.domain.album.AlbumGenre;
 import com.tunemate.be.domain.album.domain.album.dto.CreateAlbumDTO;
-import com.tunemate.be.domain.album.domain.album.repository.AlbumGenreRepository;
 import com.tunemate.be.domain.album.domain.album.repository.AlbumRepository;
 import com.tunemate.be.domain.artist.domain.artist.Artist;
 import com.tunemate.be.domain.artist.service.ArtistService;
@@ -27,15 +25,13 @@ public class AlbumService {
     private final ArtistService artistService;
     private final ReviewRepository reviewRepository;
     private final GenreService genreService;
-    private final AlbumGenreRepository albumGenreRepository;
 
     public AlbumService(AlbumRepository albumRepository, ArtistService artistService,
-            ReviewRepository reviewRepository, GenreService genreService, AlbumGenreRepository albumGenreRepository) {
+            ReviewRepository reviewRepository, GenreService genreService) {
         this.albumRepository = albumRepository;
         this.artistService = artistService;
         this.reviewRepository = reviewRepository;
         this.genreService = genreService;
-        this.albumGenreRepository = albumGenreRepository;
     }
 
     public void createAlbum(CreateAlbumDTO dto) {
@@ -45,17 +41,9 @@ public class AlbumService {
             album.setCoverImg(dto.getCover_img());
             album.setArtist(artistService.getArtistById(dto.getArtist()));
             album.setYear(dto.getYear());
-
+            album.setGenre(genreService.findById(dto.getGenre()));
             album = albumRepository.save(album);
 
-            // 2. 장르 매핑
-            if (dto.getGenre() != null) {
-                AlbumGenre albumGenre = new AlbumGenre();
-                albumGenre.setAlbum(album); // 앨범 ID 설정
-                albumGenre.setGenre(genreService.findById(dto.getGenre()));// 장르 ID 설정
-                albumGenreRepository.save(albumGenre);
-
-            }
         } catch (CustomException e) {
             throw e;
         } catch (Exception e) {
