@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.tunemate.be.domain.album.domain.album.Album;
 import com.tunemate.be.domain.album.domain.album.dto.CreateAlbumDTO;
 import com.tunemate.be.domain.album.domain.album.repository.AlbumRepository;
 import com.tunemate.be.domain.search.domain.search.dto.SearchDTO;
@@ -19,9 +20,8 @@ public class SearchService {
         this.albumRepository = albumRepository;
     }
 
-    public List<CreateAlbumDTO> findSearchClub(SearchDTO searchDTO) {
-        String searchWord = searchDTO.getSearchWord();
-        return albumRepository.findSerachAlbum(searchWord).orElseThrow(() -> new CustomException("앨범을 찾지 못했습니다.", HttpStatus.NOT_FOUND, 10001, ""));
+    public List<Album> findSearchAlbum(String searchWord) {
+        return albumRepository.findSearchAlbum(searchWord).orElseThrow(() -> new CustomException("앨범을 찾지 못했습니다.", HttpStatus.NOT_FOUND, 10001, ""));
     }
 
    

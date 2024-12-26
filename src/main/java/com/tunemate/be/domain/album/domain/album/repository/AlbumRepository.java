@@ -19,9 +19,8 @@ public interface AlbumRepository extends JpaRepository<Album, Long> {
     Optional<Album> findById(@Param("id") Long id);
 
     @Query("SELECT a FROM Album a " +
-       "JOIN a.artist ar " +
+       "JOIN FETCH a.artist ar " +
        "WHERE a.title LIKE CONCAT('%', :searchWord, '%') " +
-       "OR ar.name LIKE CONCAT('%', :searchWord, '%') " +
-       "OR CAST(ar.bornYear AS string) LIKE CONCAT('%', :searchWord, '%')")
-    Optional<List<CreateAlbumDTO>> findSerachAlbum(@Param("searchWord")String searchWord);
+       "OR ar.name LIKE CONCAT('%', :searchWord, '%') ")
+    Optional<List<Album>> findSearchAlbum(@Param("searchWord")String searchWord);
 }

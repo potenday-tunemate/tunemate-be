@@ -71,8 +71,7 @@ public class AlbumController {
     @Auth
     public ResponseEntity<OkResponse<Boolean>> getExistReview(@UserID String userID,@PathVariable Long id) {
         Long parsedUserID = Long.parseLong(userID);
-        System.out.println("parsedUserID: " + parsedUserID);
-System.out.println("id: " + id);
+ 
         return ResponseEntity.ok(new OkResponse<Boolean>(true, reviewService.getExistReview(parsedUserID,id)));
     }
 }
