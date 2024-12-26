@@ -23,7 +23,7 @@ public class ArtistController {
         this.artistService = artistService;
     }
 
-    @PostMapping("")
+    @PostMapping("/backendUse")
     public ResponseEntity<OkResponse<Void>> registArtist(@RequestBody CreateArtistDTO dto) {
         artistService.createArtist(dto);
         return ResponseEntity.ok(new OkResponse<>(true, null));

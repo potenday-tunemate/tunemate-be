@@ -39,6 +39,7 @@ public class ReviewService {
 
     public void createReview(CreateReviewDTO dto, Long userID, Long albumID) {
         try {
+
             User user = userService.getUserById(userID);
             Album album = albumService.getAlbumById(albumID);
             List<Tag> tags = new ArrayList<>();
@@ -54,6 +55,7 @@ public class ReviewService {
         }
     }
 
+    //내가 작성한 리뷰 존재 유무
     public List<ReviewResponseDTO> findAlbumReview(Long albumID, Integer limit, Integer offset) {
         Pageable pageable = PageRequest.of(offset, limit);
         List<ReviewResponseRepositoryDTO> dtos = reviewRepository.findAlbumReviewList(albumID, pageable);
@@ -107,5 +109,19 @@ public class ReviewService {
         }
         reviewRepository.deleteById(id);
     }
+
+    public Boolean getExistReview(Long parsedUserID, Long id) {
+        try{
+            boolean reviewExist = reviewRepository.findExistReview(parsedUserID,id) >=1;
+            System.out.println("확인"+reviewExist);
+            return reviewExist;
+        }
+        catch(Exception e){
+            throw new CustomException("리뷰 작성여부 조회에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR, 9004, e.getMessage());
+
+        }
+    }
+
+   
 
 }

@@ -25,7 +25,8 @@ import com.tunemate.be.global.responses.OkResponse;
 @RequestMapping("/user")
 public class UserController {
     private final UserService userService;
-    public UserController(UserService userService){
+
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 
@@ -37,41 +38,41 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    //추후기능
+    // 추후기능
     // @DeleteMapping("/{id}/follow")
     // @Auth
-    // public ResponseEntity<OkResponse<Void>> deleteReview(@UserID String userID, @PathVariable Long id) {
-    //     Long parsedUserID = Long.parseLong(userID);
-    //     userService.deleteUser(parsedUserID, id);
-    //     return ResponseEntity.ok(new OkResponse<>(true, null));
+    // public ResponseEntity<OkResponse<Void>> deleteReview(@UserID String userID,
+    // @PathVariable Long id) {
+    // Long parsedUserID = Long.parseLong(userID);
+    // userService.deleteUser(parsedUserID, id);
+    // return ResponseEntity.ok(new OkResponse<>(true, null));
     // }
 
     @PostMapping("/{id}/follow")
     @Auth
-    public ResponseEntity<OkResponse<Void>> registAlbum(@UserID String userID, @PathVariable("id")Long otherUser) {
+    public ResponseEntity<OkResponse<Void>> registAlbum(@UserID String userID, @PathVariable("id") Long otherUser) {
         Long userId = Long.parseLong(userID);
-        userService.followUser(userId,otherUser);
+        userService.followUser(userId, otherUser);
         return ResponseEntity.ok(new OkResponse<>(true, null));
     }
 
     // 내가 팔로윙하는사람 목록
     @GetMapping("/{id}/following")
-    public ResponseEntity<List<ResponseUserDTO>> getFollowingList(@PathVariable("id")Long id) {
+    public ResponseEntity<List<ResponseUserDTO>> getFollowingList(@PathVariable("id") Long id) {
         List<ResponseUserDTO> followingList = userService.getFollowingList(id);
         return ResponseEntity.ok(followingList);
     }
 
     @GetMapping("/{id}/follower")
-    public ResponseEntity<List<ResponseUserDTO>> getFollowerList(@PathVariable("id")Long id) {
+    public ResponseEntity<List<ResponseUserDTO>> getFollowerList(@PathVariable("id") Long id) {
         List<ResponseUserDTO> followerList = userService.getFollowerList(id);
         return ResponseEntity.ok(followerList);
     }
 
     @GetMapping("/{id}/review")
-    public ResponseEntity<List<ReviewResponseRepositoryDTO>> userWrtieReviewList(@PathVariable("id")Long userId) {
+    public ResponseEntity<List<ReviewResponseRepositoryDTO>> userWrtieReviewList(@PathVariable("id") Long userId) {
         List<ReviewResponseRepositoryDTO> userReviewList = userService.userWrtieReviewList(userId);
         return ResponseEntity.ok(userReviewList);
     }
-
 
 }

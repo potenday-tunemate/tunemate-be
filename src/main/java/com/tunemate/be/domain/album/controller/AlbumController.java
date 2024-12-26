@@ -29,7 +29,7 @@ public class AlbumController {
         this.reviewService = reviewService;
         this.genreService = genreService;
     } 
-    @PostMapping("")
+    @PostMapping("/backendUse")
     public ResponseEntity<OkResponse<Void>> registAlbum(@RequestBody CreateAlbumDTO dto) {
         albumService.createAlbum(dto);
         return ResponseEntity.ok(new OkResponse<>(true, null));
@@ -64,5 +64,15 @@ public class AlbumController {
     public ResponseEntity<List<Genre>> albumGenreList() {
         List<Genre> genreList = genreService.getAllTags();
         return ResponseEntity.ok(genreList);
+    }
+
+    //내가 작성한 리뷰 존재 유무
+    @GetMapping("/{id}/existReview")
+    @Auth
+    public ResponseEntity<OkResponse<Boolean>> getExistReview(@UserID String userID,@PathVariable Long id) {
+        Long parsedUserID = Long.parseLong(userID);
+        System.out.println("parsedUserID: " + parsedUserID);
+System.out.println("id: " + id);
+        return ResponseEntity.ok(new OkResponse<Boolean>(true, reviewService.getExistReview(parsedUserID,id)));
     }
 }

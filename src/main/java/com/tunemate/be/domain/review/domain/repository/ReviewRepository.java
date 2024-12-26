@@ -22,10 +22,13 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Query("SELECT new com.tunemate.be.domain.review.dto.response.AlbumVinylDTO(tag.name, COUNT(tag.id)) FROM Review review JOIN review.tag tag JOIN review.album album WHERE album.id = :id GROUP BY tag.name ORDER BY COUNT(tag.id) DESC")
     List<AlbumVinylDTO> findAlbumVinylList(@Param("id") Long id);
 
-
     @Query("SELECT new com.tunemate.be.domain.review.dto.response.ReviewResponseRepositoryDTO(review.id, user.nickname, artist.name, album.title, album.coverImg, review.content) FROM Review review JOIN review.user user JOIN review.album album JOIN review.album.artist artist ORDER BY review.createdAt DESC")
     List<ReviewResponseRepositoryDTO> findReviewList(Pageable pageable);
 
     @Query("SELECT review FROM Review review WHERE review.id = :id")
     Optional<Review> findById(Long id);
+
+    @Query("select count(*) from Review r WHERE r.user.id = :parsedUserID AND r.album.id = :id")
+    Long findExistReview(@Param("parsedUserID") Long parsedUserID, @Param("id") Long id);
+
 }
