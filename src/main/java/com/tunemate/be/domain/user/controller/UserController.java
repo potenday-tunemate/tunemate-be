@@ -21,6 +21,9 @@ import com.tunemate.be.global.annotations.Auth;
 import com.tunemate.be.global.annotations.UserID;
 import com.tunemate.be.global.responses.OkResponse;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -32,6 +35,7 @@ public class UserController {
 
     @GetMapping("")
     @Auth
+    @Operation(security = { @SecurityRequirement(name = "bearerAuth") })
     public ResponseEntity<User> getUserProfile(@UserID String userId) {
         Long parsedUserID = Long.parseLong(userId);
         User user = userService.getUserById(parsedUserID);
@@ -50,6 +54,7 @@ public class UserController {
 
     @PostMapping("/{id}/follow")
     @Auth
+    @Operation(security = { @SecurityRequirement(name = "bearerAuth") })
     public ResponseEntity<OkResponse<Void>> registAlbum(@UserID String userID, @PathVariable("id") Long otherUser) {
         Long userId = Long.parseLong(userID);
         userService.followUser(userId, otherUser);

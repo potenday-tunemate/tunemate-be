@@ -13,6 +13,10 @@ import com.tunemate.be.domain.tag.domain.Tag;
 import com.tunemate.be.global.annotations.Auth;
 import com.tunemate.be.global.annotations.UserID;
 import com.tunemate.be.global.responses.OkResponse;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +25,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/album")
 public class AlbumController {
+
+    
     private final AlbumService albumService;
     private final ReviewService reviewService;
     private final GenreService genreService;
@@ -29,6 +35,7 @@ public class AlbumController {
         this.reviewService = reviewService;
         this.genreService = genreService;
     } 
+
     @PostMapping("/backendUse")
     public ResponseEntity<OkResponse<Void>> registAlbum(@RequestBody CreateAlbumDTO dto) {
         albumService.createAlbum(dto);
@@ -48,6 +55,7 @@ public class AlbumController {
 
     @PostMapping("/{id}/review")
     @Auth
+    @Operation(security = { @SecurityRequirement(name = "bearerAuth") })
     public ResponseEntity<OkResponse<Void>> registAlbumReview(@UserID String userID, @PathVariable("id") Long albumID,
                                                               @RequestBody CreateReviewDTO dto) {
         Long parsedUserID = Long.parseLong(userID);
@@ -69,6 +77,7 @@ public class AlbumController {
     //내가 작성한 리뷰 존재 유무
     @GetMapping("/{id}/existReview")
     @Auth
+    @Operation(security = { @SecurityRequirement(name = "bearerAuth") })
     public ResponseEntity<OkResponse<Boolean>> getExistReview(@UserID String userID,@PathVariable Long id) {
         Long parsedUserID = Long.parseLong(userID);
  

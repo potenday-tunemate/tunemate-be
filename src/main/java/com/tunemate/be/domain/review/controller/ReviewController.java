@@ -8,6 +8,10 @@ import com.tunemate.be.domain.tag.service.TagService;
 import com.tunemate.be.global.annotations.Auth;
 import com.tunemate.be.global.annotations.UserID;
 import com.tunemate.be.global.responses.OkResponse;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,6 +37,7 @@ public class ReviewController {
 
     @DeleteMapping("/{id}")
     @Auth
+    @Operation(security = { @SecurityRequirement(name = "bearerAuth") })
     public ResponseEntity<OkResponse<Void>> deleteReview(@UserID String userID, @PathVariable Long id) {
         Long parsedUserID = Long.parseLong(userID);
         reviewService.deleteReview(parsedUserID, id);
@@ -41,6 +46,7 @@ public class ReviewController {
 
     @PutMapping("/{id}")
     @Auth
+    @Operation(security = { @SecurityRequirement(name = "bearerAuth") })
     public ResponseEntity<OkResponse<Void>> updateReview(@UserID String userID, @PathVariable Long id, @RequestBody UpdateReviewDTO dto) {
         Long parsedUserID = Long.parseLong(userID);
         reviewService.updateReview(parsedUserID, id, dto);
