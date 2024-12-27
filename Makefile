@@ -6,3 +6,4 @@ up:
 
 down:
 	goose mysql "${URL}" down
+# test

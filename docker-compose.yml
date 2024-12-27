@@ -19,8 +19,8 @@ services:
         condition: on-failure
 
   tunemate-be:
-    # image: ghcr.io/potenday-tunemate/tunemate-be:${GIT_COMMIT_HASH:-latest}
-    build: .
+    image: ghcr.io/potenday-tunemate/tunemate-be:${GIT_COMMIT_HASH:-latest}
+    # build: .
     depends_on:
       - db
     environment:
