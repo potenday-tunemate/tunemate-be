@@ -2,10 +2,11 @@ package com.tunemate.be.domain.album.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tunemate.be.domain.album.domain.album.Album;
-import com.tunemate.be.domain.album.domain.album.dto.CreateAlbumDTO;
 import com.tunemate.be.domain.album.domain.album.repository.AlbumRepository;
 import com.tunemate.be.domain.artist.domain.artist.Artist;
 import com.tunemate.be.domain.artist.domain.artist.repository.ArtistRepository;
+import com.tunemate.be.domain.genre.domain.Genre;
+import com.tunemate.be.domain.genre.domain.repository.GenreRepository;
 import com.tunemate.be.domain.review.domain.Review;
 import com.tunemate.be.domain.review.domain.repository.ReviewRepository;
 import com.tunemate.be.domain.review.dto.request.CreateReviewDTO;
@@ -58,6 +59,9 @@ public class AlbumControllerTest {
     @Autowired
     private ReviewRepository reviewRepository;
 
+    @Autowired
+    private GenreRepository genreRepository;
+
     @Mock
     private ReviewService reviewService;
 
@@ -92,7 +96,10 @@ public class AlbumControllerTest {
                 name("Test Artist").
                 img("artist_img.png").bornYear(1990).build();
         artistRepository.save(artist);
-        Album album = Album.builder().title("Test Album").coverImg("cover_img.png").artist(artist).year(1990).build();
+        Genre genre = Genre.builder().
+                genre("shoegaze").build();
+        genreRepository.save(genre);
+        Album album = Album.builder().title("Test Album").coverImg("cover_img.png").artist(artist).year(1990).genre(genre).build();
         albumRepository.save(album);
         Long albumId = album.getId(); // 생성된 앨범의 실제 ID를 가져옴
 
@@ -164,7 +171,11 @@ public class AlbumControllerTest {
                 name("Test Artist").
                 img("artist_img.png").bornYear(1990).build();
         artistRepository.save(artist);
-        Album album = Album.builder().title("Test Album").coverImg("cover_img.png").artist(artist).year(1990).build();
+
+        Genre genre = Genre.builder().
+                genre("shoegaze").build();
+        genreRepository.save(genre);
+        Album album = Album.builder().title("Test Album").coverImg("cover_img.png").artist(artist).genre(genre).year(1990).build();
         albumRepository.save(album);
 
         CreateReviewDTO dto = CreateReviewDTO.builder()

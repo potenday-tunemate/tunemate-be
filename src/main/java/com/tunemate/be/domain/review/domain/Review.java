@@ -16,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({"hibernate_lazy_initializer", "handler"})
 public class Review {
 
     @Id
@@ -45,7 +45,7 @@ public class Review {
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Timestamp createdAt;
-    
+
     @Column(name = "updated_at")
     private Timestamp updatedAt;
 

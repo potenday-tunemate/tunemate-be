@@ -55,7 +55,6 @@ public class AuthControllerTest {
         CreateUserDTO dto = CreateUserDTO.builder()
                 .email("test@example.com")
                 .password("password")
-                .nickname(null)
                 .build();
 
         mockMvc.perform(post("/auth/signup")
@@ -70,7 +69,6 @@ public class AuthControllerTest {
         CreateUserDTO signupDto = CreateUserDTO.builder()
                 .email("login@example.com")
                 .password("password")
-                .nickname(null)
                 .build();
 
         mockMvc.perform(post("/auth/signup")

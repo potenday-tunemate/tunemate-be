@@ -1,7 +1,5 @@
 package com.tunemate.be.domain.album.domain.album.dto;
 
-import java.util.List;
-
 import lombok.*;
 
 @Builder
@@ -16,6 +14,4 @@ public class CreateAlbumDTO {
     private Long artist;
     private Integer year;
     private Long genre;
-
-    
 }

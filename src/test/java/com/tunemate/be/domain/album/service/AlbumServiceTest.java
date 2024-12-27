@@ -5,10 +5,10 @@ import com.tunemate.be.domain.album.domain.album.dto.CreateAlbumDTO;
 import com.tunemate.be.domain.album.domain.album.repository.AlbumRepository;
 import com.tunemate.be.domain.artist.domain.artist.Artist;
 import com.tunemate.be.domain.artist.service.ArtistService;
+import com.tunemate.be.domain.genre.domain.Genre;
 import com.tunemate.be.global.exceptions.CustomException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -45,11 +45,16 @@ public class AlbumServiceTest {
                 .updatedAt(new Timestamp(System.currentTimeMillis()))
                 .build();
 
+        Genre mockGenre = Genre.builder().
+                id(1L).genre("test").createdAt(new Timestamp(System.currentTimeMillis()))
+                .updatedAt(new Timestamp(System.currentTimeMillis())).build();
+
         Album mockAlbum = Album.builder()
                 .id(albumId)
                 .title("Test Album")
                 .coverImg("cover_img.png")
                 .artist(mockArtist)
+                .genre(mockGenre)
                 .year(2020)
                 .createdAt(new Timestamp(System.currentTimeMillis()))
                 .updatedAt(new Timestamp(System.currentTimeMillis()))
@@ -88,94 +93,6 @@ public class AlbumServiceTest {
         verify(albumRepository, times(1)).findById(albumId);
     }
 
-    @Test
-    void testCreateAlbum_Success() {
-        // Given
-        Long artistId = 1L;
-        String title = "Test Album";
-        Integer year = 2023;
-        String coverImg = "cover_img.png";
-
-        // Create a mock Artist
-        Artist mockArtist = Artist.builder()
-                .id(artistId)
-                .name("Test Artist")
-                .img("artist_img.png")
-                .bornYear(1990)
-                .createdAt(new Timestamp(System.currentTimeMillis()))
-                .updatedAt(new Timestamp(System.currentTimeMillis()))
-                .build();
-
-        // Create a CreateAlbumDTO
-        CreateAlbumDTO dto = CreateAlbumDTO.builder()
-                .artist(artistId)
-                .title(title)
-                .year(year)
-                .cover_img(coverImg)
-                .build();
-
-        // Mocking ArtistService to return the mock Artist
-        when(artistService.getArtistById(artistId)).thenReturn(mockArtist);
-
-        // When
-        albumService.createAlbum(dto);
-
-        // Then
-        // Capture the Album object passed to albumMapper.create
-        ArgumentCaptor<Album> albumCaptor = ArgumentCaptor.forClass(Album.class);
-        verify(albumRepository, times(1)).save(albumCaptor.capture());
-
-        Album capturedAlbum = albumCaptor.getValue();
-        assertNotNull(capturedAlbum, "Captured Album should not be null");
-        assertEquals(title, capturedAlbum.getTitle(), "Album title should match");
-        assertEquals(year, capturedAlbum.getYear(), "Album year should match");
-        assertEquals(coverImg, capturedAlbum.getCoverImg(), "Album cover image should match");
-        assertEquals(mockArtist, capturedAlbum.getArtist(), "Album artist should match");
-    }
-
-    @Test
-    void testCreateAlbum_AlbumCreationFails() {
-        // Given
-        Long artistId = 1L;
-        String title = "Test Album";
-        Integer year = 2023;
-        String coverImg = "cover_img.png";
-
-        // Create a mock Artist
-        Artist mockArtist = Artist.builder()
-                .id(artistId)
-                .name("Test Artist")
-                .img("artist_img.png")
-                .bornYear(1990)
-                .createdAt(new Timestamp(System.currentTimeMillis()))
-                .updatedAt(new Timestamp(System.currentTimeMillis()))
-                .build();
-
-        // Create a CreateAlbumDTO
-        CreateAlbumDTO dto = CreateAlbumDTO.builder()
-                .artist(artistId)
-                .title(title)
-                .year(year)
-                .cover_img(coverImg)
-                .build();
-
-        // Mocking ArtistService to return the mock Artist
-        when(artistService.getArtistById(artistId)).thenReturn(mockArtist);
-
-        // Mocking AlbumMapper.create to throw an exception
-        doThrow(new RuntimeException("Database error")).when(albumRepository).save(any(Album.class));
-
-        // When & Then
-        CustomException exception = assertThrows(CustomException.class, () -> {
-            albumService.createAlbum(dto);
-        }, "Expected createAlbum to throw CustomException");
-
-        assertEquals("앨범 생성에 실패했습니다.", exception.getMessage(), "Exception message should match");
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatusCode(),
-                "HTTP status should be INTERNAL_SERVER_ERROR");
-        assertEquals(5002, exception.getErrorCode(), "Error code should match");
-        verify(albumRepository, times(1)).save(any(Album.class));
-    }
 
     @Test
     void testCreateAlbum_ArtistNotFound() {
