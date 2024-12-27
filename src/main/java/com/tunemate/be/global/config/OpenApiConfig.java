@@ -24,7 +24,7 @@ public class OpenApiConfig {
                 .in(SecurityScheme.In.HEADER)
                 .name("Authorization");
         Server server = new Server();
-        server.setUrl("https://tunemate-be-production.up.railway.app.com");
+        server.setUrl("https://tunemate-be-production.up.railway.app");
 
         // Security requirement
         SecurityRequirement securityRequirement = new SecurityRequirement().addList("bearerAuth");
