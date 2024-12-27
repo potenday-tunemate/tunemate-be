@@ -83,4 +83,5 @@ jobs:
             export SMTP_USERNAME="${{ secrets.SMTP_USERNAME }}"
             export SMTP_PASSWORD="${{ secrets.SMTP_PASSWORD }}"
             export GIT_COMMIT_HASH="${{ github.sha }}"
+            docker compose build
             docker rollout tunemate-be
