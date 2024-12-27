@@ -41,6 +41,8 @@ public class GenreService {
             return resultNew.stream().map(row -> {
                 Album album = (Album) row[0];
                 String artistName = (String) row[1];
+                Long genreID = (Long) row[2];
+                String albumGenre = (String) row[3];
 
                 // CreateAlbumDTO 생성 및 필드 매핑
                 CreateAlbumDTO dto = new CreateAlbumDTO();
@@ -48,10 +50,12 @@ public class GenreService {
                 dto.setCover_img(album.getCoverImg());
                 dto.setArtist(album.getArtist() != null ? album.getArtist().getId() : null);
                 dto.setYear(album.getYear());
+                dto.setGenre(genreID);
 
                 Map<String, Object> map = new HashMap<>();
                 map.put("album", dto);
                 map.put("artistName", artistName);
+                map.put("albumGenre", albumGenre);
 
                 return map;
             }).collect(Collectors.toList());

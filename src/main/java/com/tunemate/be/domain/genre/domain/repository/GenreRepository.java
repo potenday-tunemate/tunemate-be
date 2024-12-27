@@ -15,7 +15,7 @@ public interface GenreRepository extends JpaRepository<Genre, Long> {
     @Query("SELECT genre FROM Genre genre")
     List<Genre> findeAllGenres();
 
-    @Query("SELECT a, ar.name FROM Album a " +
+    @Query("SELECT a, ar.name,a.id, g.genre FROM Album a " +
             "JOIN a.genre g " +
             "JOIN a.artist ar " +
             "WHERE g.id = :genreId " +
