@@ -3,18 +3,10 @@ package com.tunemate.be.domain.album.domain.album;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tunemate.be.domain.artist.domain.artist.Artist;
 import com.tunemate.be.domain.genre.domain.Genre;
-import com.tunemate.be.domain.tag.domain.Tag;
-
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 @Builder
@@ -22,7 +14,7 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+@JsonIgnoreProperties({"hibernate_lazy_initializer", "handler"})
 public class Album {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,7 +29,7 @@ public class Album {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "artist_id")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Artist artist;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -46,7 +38,7 @@ public class Album {
 
     @Column(name = "year", nullable = false)
     private Integer year;
-    
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Timestamp createdAt;
 

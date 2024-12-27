@@ -3,20 +3,14 @@ package com.tunemate.be.domain.album.service;
 import com.tunemate.be.domain.album.domain.album.Album;
 import com.tunemate.be.domain.album.domain.album.dto.CreateAlbumDTO;
 import com.tunemate.be.domain.album.domain.album.repository.AlbumRepository;
-import com.tunemate.be.domain.artist.domain.artist.Artist;
 import com.tunemate.be.domain.artist.service.ArtistService;
-import com.tunemate.be.domain.genre.domain.Genre;
 import com.tunemate.be.domain.genre.service.GenreService;
-import com.tunemate.be.domain.review.domain.Review;
 import com.tunemate.be.domain.review.domain.repository.ReviewRepository;
 import com.tunemate.be.domain.review.dto.response.AlbumVinylDTO;
-import com.tunemate.be.domain.tag.domain.Tag;
-import com.tunemate.be.domain.user.domain.user.User;
 import com.tunemate.be.global.exceptions.CustomException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -27,7 +21,7 @@ public class AlbumService {
     private final GenreService genreService;
 
     public AlbumService(AlbumRepository albumRepository, ArtistService artistService,
-            ReviewRepository reviewRepository, GenreService genreService) {
+                        ReviewRepository reviewRepository, GenreService genreService) {
         this.albumRepository = albumRepository;
         this.artistService = artistService;
         this.reviewRepository = reviewRepository;
