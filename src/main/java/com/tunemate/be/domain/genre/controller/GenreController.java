@@ -25,17 +25,12 @@ public class GenreController {
         this.genreService = genreService;
     }
 
-    @GetMapping("")
-    public ResponseEntity<OkResponse<List<Genre>>> getAlbumList() {
-        return ResponseEntity.ok(new OkResponse<>(true, genreService.getAllTags()));
-    }
-    
     @GetMapping("/{id}/{sortType}")
     public ResponseEntity<List<Map<String, Object>>> getGenres(
             @PathVariable Long id,
             @PathVariable String sortType) {
-        
-                List<Map<String, Object>> genres = genreService.getGenresBySortType(id,sortType);
+
+        List<Map<String, Object>> genres = genreService.getGenresBySortType(id, sortType);
         return ResponseEntity.ok(genres);
     }
 }
