@@ -25,5 +25,5 @@ public interface AlbumRepository extends JpaRepository<Album, Long> {
     Optional<List<Album>> findSearchAlbum(@Param("searchWord")String searchWord);
 
     @Query("SELECT a FROM Album a ")
-    Optional<Album> findById();
+    Optional<List<Album>> findById();
 }

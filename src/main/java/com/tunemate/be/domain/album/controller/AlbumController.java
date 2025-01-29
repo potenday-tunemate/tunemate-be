@@ -48,7 +48,7 @@ public class AlbumController {
     }
 
     @GetMapping()
-    public ResponseEntity<OkResponse<Album>> getAlbumAll() {
+    public ResponseEntity<OkResponse<List<Album>>> getAlbumAll() {
         return ResponseEntity.ok(new OkResponse<>(true, albumService.getAlbumAll()));
     }
 

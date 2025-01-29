@@ -55,7 +55,7 @@ public class AlbumService {
                 .orElseThrow(() -> new CustomException("앨범을 찾지 못했습니다.", HttpStatus.NOT_FOUND, 5001, ""));
     }
 
-    public Album getAlbumAll() {
+    public List<Album> getAlbumAll() {
         return albumRepository.findById()
                 .orElseThrow(() -> new CustomException("앨범을 찾지 못했습니다.", HttpStatus.NOT_FOUND, 5002, ""));
     }
