@@ -47,6 +47,12 @@ public class AlbumController {
         return ResponseEntity.ok(new OkResponse<>(true, albumService.getAlbumById(id)));
     }
 
+    @GetMapping()
+    public ResponseEntity<OkResponse<Album>> getAlbumAll() {
+        return ResponseEntity.ok(new OkResponse<>(true, albumService.getAlbumAll()));
+    }
+
+
     @GetMapping("/{id}/review")
     public ResponseEntity<OkResponse<List<ReviewResponseDTO>>> getAlbumReviews(@PathVariable("id") Long id,
                                                                                @RequestParam(value = "limit", defaultValue = "10") Integer limit, @RequestParam(value = "offset", defaultValue = "0") Integer offset) {

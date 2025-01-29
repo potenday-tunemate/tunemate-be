@@ -55,13 +55,11 @@ public class ReviewService {
         }
     }
 
-    //내가 작성한 리뷰 존재 유무
     public List<ReviewResponseDTO> findAlbumReview(Long albumID, Integer limit, Integer offset) {
         Pageable pageable = PageRequest.of(offset, limit);
         List<ReviewResponseRepositoryDTO> dtos = reviewRepository.findAlbumReviewList(albumID, pageable);
         List<List<String>> tagsList = dtos.stream()
                 .map((review) -> reviewRepository.findTagsByReviewId(review.getReviewId())).toList();
-        System.out.println(tagsList);
         List<ReviewResponseDTO> result = new ArrayList<>();
         for (int i = 0; i < dtos.size(); i++) {
             ReviewResponseRepositoryDTO repoDto = dtos.get(i);
@@ -96,7 +94,6 @@ public class ReviewService {
         try {
             reviewRepository.save(review);
         } catch (Exception e) {
-            System.out.println(e);
             throw new CustomException("리뷰 업데이트에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR, 9003, e.getMessage());
         }
     }
@@ -109,11 +106,11 @@ public class ReviewService {
         }
         reviewRepository.deleteById(id);
     }
-
+    
+    //내가 작성한 리뷰 존재 유무
     public Boolean getExistReview(Long parsedUserID, Long id) {
         try{
             boolean reviewExist = reviewRepository.findExistReview(parsedUserID,id) >=1;
-            System.out.println("확인"+reviewExist);
             return reviewExist;
         }
         catch(Exception e){
