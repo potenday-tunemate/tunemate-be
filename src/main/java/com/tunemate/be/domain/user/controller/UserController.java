@@ -75,7 +75,9 @@ public class UserController {
     }
 
     @GetMapping("/{id}/review")
-    public ResponseEntity<List<ReviewResponseRepositoryDTO>> userWrtieReviewList(@PathVariable("id") Long userId) {
+    @Auth
+    public ResponseEntity<List<ReviewResponseRepositoryDTO>> userWrtieReviewList(@UserID String userID) {
+        Long userId = Long.parseLong(userID);
         List<ReviewResponseRepositoryDTO> userReviewList = userService.userWrtieReviewList(userId);
         return ResponseEntity.ok(userReviewList);
     }
