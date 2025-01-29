@@ -37,7 +37,7 @@ public class UserController {
     @GetMapping("")
     @Auth
     @Operation(security = { @SecurityRequirement(name = "bearerAuth") })
-    public ResponseEntity<User> getUserProfile(@UserID String userId) {
+    public ResponseEntity<User> getUserProfile(@Parameter(hidden = true)@UserID String userId) {
         Long parsedUserID = Long.parseLong(userId);
         User user = userService.getUserById(parsedUserID);
         return ResponseEntity.ok(user);
@@ -56,7 +56,7 @@ public class UserController {
     @PostMapping("/{id}/follow")
     @Auth
     @Operation(security = { @SecurityRequirement(name = "bearerAuth") })
-    public ResponseEntity<OkResponse<Void>> registAlbum(@UserID String userID, @PathVariable("id") Long otherUser) {
+    public ResponseEntity<OkResponse<Void>> registAlbum(@Parameter(hidden = true)@UserID String userID, @PathVariable("id") Long otherUser) {
         Long userId = Long.parseLong(userID);
         userService.followUser(userId, otherUser);
         return ResponseEntity.ok(new OkResponse<>(true, null));
