@@ -22,6 +22,7 @@ import com.tunemate.be.global.annotations.UserID;
 import com.tunemate.be.global.responses.OkResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
@@ -74,9 +75,9 @@ public class UserController {
         return ResponseEntity.ok(followerList);
     }
 
-    @GetMapping("/{id}/review")
+    @GetMapping("/review")
     @Auth
-    public ResponseEntity<List<ReviewResponseRepositoryDTO>> userWrtieReviewList(@UserID String userID) {
+    public ResponseEntity<List<ReviewResponseRepositoryDTO>> userWrtieReviewList(@Parameter(hidden = true)@UserID String userID) {
         Long userId = Long.parseLong(userID);
         List<ReviewResponseRepositoryDTO> userReviewList = userService.userWrtieReviewList(userId);
         return ResponseEntity.ok(userReviewList);
