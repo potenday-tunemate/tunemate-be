@@ -15,6 +15,7 @@ import com.tunemate.be.global.annotations.UserID;
 import com.tunemate.be.global.responses.OkResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import org.springframework.http.ResponseEntity;
@@ -62,7 +63,7 @@ public class AlbumController {
     @PostMapping("/{id}/review")
     @Auth
     @Operation(security = { @SecurityRequirement(name = "bearerAuth") })
-    public ResponseEntity<OkResponse<Void>> registAlbumReview(@UserID String userID, @PathVariable("id") Long albumID,
+    public ResponseEntity<OkResponse<Void>> registAlbumReview(@Parameter(hidden = true) @UserID String userID, @PathVariable("id") Long albumID,
                                                               @RequestBody CreateReviewDTO dto) {
         Long parsedUserID = Long.parseLong(userID);
         reviewService.createReview(dto, parsedUserID, albumID);
@@ -84,7 +85,7 @@ public class AlbumController {
     @GetMapping("/{id}/existReview")
     @Auth
     @Operation(security = { @SecurityRequirement(name = "bearerAuth") })
-    public ResponseEntity<OkResponse<Boolean>> getExistReview(@UserID String userID,@PathVariable Long id) {
+    public ResponseEntity<OkResponse<Boolean>> getExistReview(@Parameter(hidden = true) @UserID String userID,@PathVariable Long id) {
         Long parsedUserID = Long.parseLong(userID);
  
         return ResponseEntity.ok(new OkResponse<Boolean>(true, reviewService.getExistReview(parsedUserID,id)));

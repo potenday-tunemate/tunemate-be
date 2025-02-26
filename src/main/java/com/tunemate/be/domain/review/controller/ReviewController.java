@@ -10,6 +10,7 @@ import com.tunemate.be.global.annotations.UserID;
 import com.tunemate.be.global.responses.OkResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import org.springframework.http.ResponseEntity;
@@ -38,7 +39,7 @@ public class ReviewController {
     @DeleteMapping("/{id}")
     @Auth
     @Operation(security = { @SecurityRequirement(name = "bearerAuth") })
-    public ResponseEntity<OkResponse<Void>> deleteReview(@UserID String userID, @PathVariable Long id) {
+    public ResponseEntity<OkResponse<Void>> deleteReview(@Parameter(hidden = true) @UserID String userID, @PathVariable Long id) {
         Long parsedUserID = Long.parseLong(userID);
         reviewService.deleteReview(parsedUserID, id);
         return ResponseEntity.ok(new OkResponse<>(true, null));
@@ -47,7 +48,7 @@ public class ReviewController {
     @PutMapping("/{id}")
     @Auth
     @Operation(security = { @SecurityRequirement(name = "bearerAuth") })
-    public ResponseEntity<OkResponse<Void>> updateReview(@UserID String userID, @PathVariable Long id, @RequestBody UpdateReviewDTO dto) {
+    public ResponseEntity<OkResponse<Void>> updateReview(@Parameter(hidden = true) @UserID String userID, @PathVariable Long id, @RequestBody UpdateReviewDTO dto) {
         Long parsedUserID = Long.parseLong(userID);
         reviewService.updateReview(parsedUserID, id, dto);
         return ResponseEntity.ok(new OkResponse<>(true, null));
